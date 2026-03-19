@@ -54,7 +54,6 @@ export function CartClientPage() {
                   </button>
                 </div>
               </div>
-              <div className="font-semibold text-ink">{formatPrice(product.price * qty)}</div>
             </article>
           ))}
         </div>

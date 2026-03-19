@@ -5,8 +5,7 @@ export default function CatalogPage() {
   return (
     <main className="section-shell py-12">
       <span className="badge">Каталог товарів</span>
-      <h1 className="section-title mt-4">Сонячні панелі, інвертори, акумулятори</h1>
-      <p className="section-copy">Картки у форматі магазину: фото, рейтинг, ціна, короткі характеристики, обране та кошик.</p>
+      
 
       <div className="mt-6 flex flex-wrap gap-2">
         {categoryOrder.map((category) => (
