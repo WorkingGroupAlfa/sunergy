@@ -1,0 +1,31 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="760" height="640" viewBox="0 0 760 640" fill="none">
+  <rect width="760" height="640" fill="#0D2649"/>
+  <ellipse cx="566" cy="84" rx="98" ry="98" fill="#F5F8FF" fill-opacity="0.16"/>
+
+  <path d="M65 480L220 356L390 458V560H65V480Z" fill="#F5F8FF" fill-opacity="0.08" stroke="#ABC5E9" stroke-opacity="0.28"/>
+  <path d="M184 392L390 282L664 438V560H184V392Z" fill="#102A51" stroke="#9FBCE3" stroke-opacity="0.22"/>
+  <path d="M246 345L395 265L609 387L466 463L246 345Z" fill="#173E71"/>
+  <path d="M259 349L397 276L593 389L463 454L259 349Z" fill="#6C8FBF" fill-opacity="0.35"/>
+
+  <g opacity="0.92">
+    <rect x="280" y="318" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+    <rect x="318" y="298" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+    <rect x="356" y="279" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+    <rect x="394" y="299" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+    <rect x="432" y="320" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+    <rect x="470" y="341" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+    <rect x="508" y="361" width="34" height="18" rx="2" fill="#C8DBF6" fill-opacity="0.65"/>
+  </g>
+
+  <rect x="98" y="422" width="132" height="138" rx="10" fill="#E6EEF8" fill-opacity="0.14" stroke="#AFC6E6" stroke-opacity="0.23"/>
+  <rect x="124" y="465" width="35" height="95" fill="#B4CAE8" fill-opacity="0.25"/>
+  <rect x="173" y="465" width="35" height="95" fill="#B4CAE8" fill-opacity="0.15"/>
+
+  <rect x="452" y="420" width="204" height="112" rx="18" fill="#F6FAFF" fill-opacity="0.1" stroke="#C8DBF6" stroke-opacity="0.2"/>
+
+  <g text-anchor="middle" font-family="Segoe UI, Arial, sans-serif">
+    <text x="554" y="462" fill="#D9E7FA" font-size="36" font-weight="600" letter-spacing="0.4">5-10 кВт</text>
+    <text x="554" y="490" fill="#B8CAE7" font-size="14" font-weight="500">Сонячний будинок + резерв</text>
+    <text x="554" y="513" fill="#AABEDC" font-size="14" font-weight="500">Панелі • Інвертор • LiFePO4</text>
+  </g>
+</svg>

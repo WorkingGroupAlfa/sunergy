@@ -1,0 +1,56 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-graphite antialiased;
+}
+
+::selection {
+  background: rgba(45, 77, 122, 0.18);
+}
+
+.section-shell {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+.section-title {
+  @apply text-3xl font-semibold tracking-tight text-ink md:text-4xl;
+}
+
+.section-copy {
+  @apply mt-4 max-w-3xl text-base leading-7 text-steel md:text-lg;
+}
+
+.panel-card {
+  @apply rounded-[24px] border border-line/80 bg-white shadow-soft;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full border border-line bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-accent;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-accent;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full border border-line bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:-translate-y-0.5 hover:border-accent hover:text-accent;
+}
+
+.brand-track {
+  animation: brand-scroll 22s linear infinite;
+}
+
+@keyframes brand-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
