@@ -3,10 +3,12 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { generatorPacks, products, type GeneratorPackKey } from '@/data/shop';
+import { generatorPacks, type GeneratorPackKey } from '@/data/shop';
 import { formatPrice } from '@/lib/utils';
+import { useShop } from '@/components/shop/shop-provider';
 
 export function PowerCalculator() {
+  const { products } = useShop();
   const [packKey, setPackKey] = useState<GeneratorPackKey>('house');
   const [backup, setBackup] = useState(true);
   const [autonomy, setAutonomy] = useState(true);

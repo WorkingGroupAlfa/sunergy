@@ -1,10 +1,13 @@
-﻿import Image from 'next/image';
+'use client';
+
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-import { cases, products } from '@/data/shop';
+import { cases } from '@/data/shop';
 import { ProductCard } from '@/components/shop/product-card';
 import { PowerCalculator } from '@/components/shop/power-calculator';
 import { BrandCarousel } from '@/components/shop/brand-carousel';
+import { useShop } from '@/components/shop/shop-provider';
 
 const benefits = [
   'Готові рішення на 5, 15 і 30 кВт',
@@ -13,8 +16,9 @@ const benefits = [
 ];
 
 export default function HomePage() {
+  const { products } = useShop();
   const featured = products.slice(0, 3);
-  const sunergyBatteries = products.filter((item) => item.brand === 'SUNERGY').slice(0, 3);
+  const featuredStorage = products.filter((item) => item.category === 'Акумулятори' || item.category === 'Системи зберігання').slice(0, 3);
 
   return (
     <main>
@@ -70,6 +74,21 @@ export default function HomePage() {
       </section>
 
       <section className="section-shell py-14">
+        <div className="rounded-[28px] border border-line bg-frost/70 p-6 md:p-8">
+          <span className="badge">Власне виробництво SUNERGY</span>
+          <h2 className="mt-4 text-3xl font-semibold text-ink">Акумулятори українського виробництва</h2>
+          <p className="mt-3 max-w-3xl text-steel">
+            У цьому блоці буде лінійка LiFePO4 акумуляторів SUNERGY українського виробництва. Виробляємо в Україні, адаптуємо під домашні та бізнес-сценарії, забезпечуємо сервіс і масштабування системи.
+          </p>
+          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {featuredStorage.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-shell pb-14">
         <div className="flex items-end justify-between gap-3">
           <div>
             <span className="badge">Товари вітрини</span>
@@ -87,24 +106,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section-shell pb-14">
-        <div className="rounded-[28px] border border-line bg-frost/70 p-6 md:p-8">
-          <span className="badge">Власне виробництво SUNERGY</span>
-          <h2 className="mt-4 text-3xl font-semibold text-ink">Акумулятори українського виробництва</h2>
-          <p className="mt-3 max-w-3xl text-steel">
-            У магазині доступна лінійка LiFePO4 акумуляторів SUNERGY. Виробляємо в Україні, адаптуємо під домашні та бізнес-сценарії, забезпечуємо сервіс і масштабування системи.
-          </p>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {sunergyBatteries.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       <PowerCalculator />
 
       <BrandCarousel />
+
+      <section className="section-shell py-14">
+        <div className="grid gap-8 rounded-[28px] border border-line bg-white p-6 shadow-soft md:p-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+          <div>
+            <span className="badge">Гарантія</span>
+            <h2 className="mt-4 text-3xl font-semibold text-ink">Відповідаємо за систему після запуску</h2>
+          </div>
+          <div className="space-y-4 text-sm leading-7 text-steel md:text-base">
+            <p>
+              SUNERGY підбирає обладнання з офіційною гарантією виробника та допомагає з сервісним супроводом протягом усього періоду експлуатації.
+            </p>
+            <p>
+              Після встановлення ми консультуємо щодо роботи інвертора, акумуляторів і сонячних панелей, допомагаємо масштабувати систему та швидко реагуємо на сервісні запити.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="section-shell py-14">
         <div className="flex items-end justify-between gap-3">

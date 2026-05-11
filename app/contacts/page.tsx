@@ -1,5 +1,6 @@
 ﻿import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { ContactLeadForm } from '@/components/contact-lead-form';
 
 export default function ContactsPage() {
   return (
@@ -22,13 +23,7 @@ export default function ContactsPage() {
 
         <section className="panel-card p-6">
           <h2 className="text-xl font-semibold text-ink">Швидкий запит</h2>
-          <form className="mt-4 grid gap-4">
-            <input className="rounded-xl border border-line px-4 py-3 text-sm outline-none focus:border-accent" placeholder="Ваше імʼя" />
-            <input className="rounded-xl border border-line px-4 py-3 text-sm outline-none focus:border-accent" placeholder="Телефон" />
-            <input className="rounded-xl border border-line px-4 py-3 text-sm outline-none focus:border-accent" placeholder="Email" />
-            <textarea className="min-h-32 rounded-xl border border-line px-4 py-3 text-sm outline-none focus:border-accent" placeholder="Коротко опишіть задачу" />
-            <button type="button" className="btn-primary w-fit">Надіслати</button>
-          </form>
+          <ContactLeadForm />
         </section>
       </div>
     </main>

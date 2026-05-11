@@ -42,6 +42,55 @@ body {
   @apply inline-flex items-center justify-center rounded-full border border-line bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:-translate-y-0.5 hover:border-accent hover:text-accent;
 }
 
+.input {
+  @apply w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition placeholder:text-steel/60 focus:border-accent focus:ring-4 focus:ring-blue-100;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.category-scroll {
+  scrollbar-color: #2d4d7a #eaf2fb;
+  scrollbar-width: thin;
+}
+
+.category-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.category-scroll::-webkit-scrollbar-track {
+  margin-inline: 18px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(#eaf2fb, #eaf2fb) padding-box;
+}
+
+.category-scroll::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(#2d4d7a, #2d4d7a) padding-box;
+}
+
+.category-scroll::-webkit-scrollbar-thumb:hover {
+  background: #0b2445;
+}
+
+.category-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.product-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 520px;
+}
+
 .brand-track {
   animation: brand-scroll 22s linear infinite;
 }

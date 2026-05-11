@@ -1,34 +1,59 @@
-﻿import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProductBySlug, getRelatedProducts } from '@/data/shop';
 import { ProductActions } from '@/components/shop/product-actions';
 import { ProductCard } from '@/components/shop/product-card';
+import { products, type Product } from '@/data/shop';
 import { formatPrice } from '@/lib/utils';
+
+const availabilityLabel: Record<NonNullable<Product['availability']>, string> = {
+  available: 'Є в наявності',
+  preorder: 'Під замовлення',
+  out_of_stock: 'Немає в наявності',
+};
+
+export function generateStaticParams() {
+  return products.map((product) => ({ slug: product.slug }));
+}
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = products.find((item) => item.slug === decodeURIComponent(slug));
 
   if (!product) {
     notFound();
   }
 
-  const related = getRelatedProducts(product);
+  const related = products.filter((item) => item.slug !== product.slug && item.category === product.category).slice(0, 3);
+  const showFullImage = product.slug === 'sunergy-home-5kwh-lfp';
+  const hasRasterProductImage = !product.image.startsWith('/illustrations/');
 
   return (
     <main className="section-shell py-12">
       <div className="text-sm text-steel">
-        <Link href="/catalog" className="hover:text-accent">Каталог</Link> / {product.title}
+        <Link href="/catalog" className="hover:text-accent">
+          Каталог
+        </Link>{' '}
+        / {product.title}
       </div>
 
       <section className="mt-5 grid gap-8 lg:grid-cols-[1fr_0.95fr]">
         <article className="panel-card overflow-hidden">
-          <Image src={product.image} alt={product.title} width={900} height={680} className="h-full w-full object-cover" />
+          <Image
+            src={product.image}
+            alt={product.title}
+            width={900}
+            height={680}
+            priority
+            className={showFullImage || hasRasterProductImage ? 'h-full w-full object-contain' : 'h-full w-full object-cover'}
+          />
         </article>
 
         <article className="panel-card p-6">
-          <div className="text-sm text-accent">{product.category}</div>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-accent">{product.category}</span>
+            <span className="rounded-full bg-frost px-2.5 py-1 text-xs text-ink">{availabilityLabel[product.availability ?? 'available']}</span>
+          </div>
           <h1 className="mt-2 text-3xl font-semibold text-ink">{product.title}</h1>
           <div className="mt-5 text-3xl font-semibold text-ink">{formatPrice(product.price)}</div>
           <p className="mt-4 text-steel">{product.description}</p>
@@ -44,7 +69,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           <div className="mt-6">
             <ProductActions slug={product.slug} />
-            <p className="mt-3 text-xs text-steel">Кнопку "Купити" на сторінці товару вимкнено за вимогою.</p>
           </div>
         </article>
       </section>

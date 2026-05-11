@@ -2,13 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Heart, ShoppingCart } from 'lucide-react';
-import { products } from '@/data/shop';
 import { formatPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
 
 export function FavoritesClientPage() {
-  const { favorites, toggleFavorite, addToCart } = useShop();
+  const { favorites, products, toggleFavorite, addToCart } = useShop();
   const items = products.filter((product) => favorites.includes(product.slug));
 
   if (items.length === 0) {
@@ -27,8 +27,8 @@ export function FavoritesClientPage() {
       <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {items.map((product) => (
           <article key={product.slug} className="panel-card overflow-hidden">
-            <Link href={`/product/${product.slug}`} className="block border-b border-line bg-frost">
-              <Image src={product.image} alt={product.title} width={700} height={500} className="h-44 w-full object-cover" />
+            <Link href={`/product/${product.slug}`} className="block aspect-[16/11] overflow-hidden border-b border-line bg-frost">
+              <FavoriteProductImage src={product.image} alt={product.title} />
             </Link>
             <div className="p-5">
               <Link href={`/product/${product.slug}`} className="text-lg font-semibold text-ink hover:text-accent">
@@ -49,6 +49,25 @@ export function FavoritesClientPage() {
         ))}
       </div>
     </section>
+  );
+}
+
+function FavoriteProductImage({ src, alt }: { src: string; alt: string }) {
+  const [isPortraitImage, setIsPortraitImage] = useState(false);
+  const isRasterProductImage = !src.startsWith('/illustrations/');
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={700}
+      height={500}
+      className={isRasterProductImage && isPortraitImage ? 'h-full w-full object-contain object-center' : 'h-full w-full object-cover object-center'}
+      onLoad={(event) => {
+        const image = event.currentTarget;
+        setIsPortraitImage(isRasterProductImage && image.naturalHeight > image.naturalWidth);
+      }}
+    />
   );
 }
 
