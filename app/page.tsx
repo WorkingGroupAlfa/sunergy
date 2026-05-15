@@ -3,20 +3,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-import { cases } from '@/data/shop';
 import { ProductCard } from '@/components/shop/product-card';
 import { PowerCalculator } from '@/components/shop/power-calculator';
 import { BrandCarousel } from '@/components/shop/brand-carousel';
+import { CasesCarousel } from '@/components/shop/cases-carousel';
 import { useShop } from '@/components/shop/shop-provider';
 
-const benefits = [
-  'Готові рішення на 5, 15 і 30 кВт',
-  'Обране та кошик між сторінками',
-  'Окремі сторінки товару, прикладів і контактів',
-];
-
 export default function HomePage() {
-  const { products } = useShop();
+  const { products, cases, homeContent, showCalculator } = useShop();
   const featured = products.slice(0, 3);
   const featuredStorage = products.filter((item) => item.category === 'Акумулятори' || item.category === 'Системи зберігання').slice(0, 3);
 
@@ -26,32 +20,29 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-grid-fade bg-[size:34px_34px] opacity-50" />
         <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
 
-        <div className="section-shell relative grid gap-10 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-20">
-          <div>
-            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs uppercase tracking-[0.18em] text-blue-100">
-              SUNERGY SHOP
-            </span>
-            <h1 className="mt-6 text-4xl font-semibold leading-tight md:text-6xl md:leading-[1.05]">
-              Енергетична вітрина для дому та бізнесу
+        <div className="section-shell relative grid gap-10 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-20">
+          <div className="order-2 lg:order-1">
+            <h1 className="text-4xl font-semibold leading-tight md:text-6xl md:leading-[1.05]">
+              {homeContent.heroTitle}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-blue-100 md:text-lg">
-              Сонячні панелі, інвертори, акумулятори та готові комплекти. Оберіть товар, відкрийте картку й додайте в обране або кошик.
+              {homeContent.heroText}
             </p>
 
             <div className="mt-8 hidden flex-wrap gap-3 sm:flex">
               <Link href="/catalog" className="btn-primary bg-white text-ink hover:bg-frost">
-                Перейти до каталогу
+                {homeContent.catalogButton}
               </Link>
               <Link href="/examples" className="btn-secondary border-white/25 bg-white/10 text-white hover:bg-white/20 hover:text-white">
-                Переглянути приклади
+                {homeContent.examplesButton}
               </Link>
               <Link href="/contacts" className="btn-secondary border-white/25 bg-white/10 text-white hover:bg-white/20 hover:text-white">
-                Контакти
+                {homeContent.contactsButton}
               </Link>
             </div>
 
             <ul className="mt-7 space-y-2 text-sm text-blue-100">
-              {benefits.map((item) => (
+              {homeContent.benefits.map((item) => (
                 <li key={item} className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-blue-300" />
                   <span>{item}</span>
@@ -60,10 +51,10 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <div className="panel-card overflow-hidden border-white/15 bg-white/10">
+          <div className="order-1 overflow-hidden rounded-[24px] border border-white/15 bg-white/10 shadow-panel lg:order-2">
             <Image
-              src="/illustrations/hero-energy.svg"
-              alt="Сонячна система"
+              src="/images/hero-sunergy-showroom.jpg"
+              alt="Сонячна система SUNERGY"
               width={820}
               height={640}
               className="h-full w-full object-cover"
@@ -75,10 +66,10 @@ export default function HomePage() {
 
       <section className="section-shell py-14">
         <div className="rounded-[28px] border border-line bg-frost/70 p-6 md:p-8">
-          <span className="badge">Власне виробництво SUNERGY</span>
-          <h2 className="mt-4 text-3xl font-semibold text-ink">Акумулятори українського виробництва</h2>
+          <span className="badge">{homeContent.storageBadge}</span>
+          <h2 className="mt-4 text-3xl font-semibold text-ink">{homeContent.storageTitle}</h2>
           <p className="mt-3 max-w-3xl text-steel">
-            У цьому блоці буде лінійка LiFePO4 акумуляторів SUNERGY українського виробництва. Виробляємо в Україні, адаптуємо під домашні та бізнес-сценарії, забезпечуємо сервіс і масштабування системи.
+            {homeContent.storageText}
           </p>
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {featuredStorage.map((product) => (
@@ -91,11 +82,11 @@ export default function HomePage() {
       <section className="section-shell pb-14">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <span className="badge">Товари вітрини</span>
-            <h2 className="section-title mt-3">Популярні позиції</h2>
+            <span className="badge">{homeContent.productsBadge}</span>
+            <h2 className="section-title mt-3">{homeContent.productsTitle}</h2>
           </div>
           <Link href="/catalog" className="text-sm font-semibold text-accent hover:text-ink">
-            Увесь каталог <ArrowRight className="ml-1 inline h-4 w-4" />
+            {homeContent.productsLink} <ArrowRight className="ml-1 inline h-4 w-4" />
           </Link>
         </div>
 
@@ -106,53 +97,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      <PowerCalculator />
+      {showCalculator ? <PowerCalculator /> : null}
 
-      <BrandCarousel />
+      <BrandCarousel title={homeContent.brandsTitle} />
 
       <section className="section-shell py-14">
         <div className="grid gap-8 rounded-[28px] border border-line bg-white p-6 shadow-soft md:p-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
           <div>
-            <span className="badge">Гарантія</span>
-            <h2 className="mt-4 text-3xl font-semibold text-ink">Відповідаємо за систему після запуску</h2>
+            <span className="badge">{homeContent.guaranteeBadge}</span>
+            <h2 className="mt-4 text-3xl font-semibold text-ink">{homeContent.guaranteeTitle}</h2>
           </div>
           <div className="space-y-4 text-sm leading-7 text-steel md:text-base">
             <p>
-              SUNERGY підбирає обладнання з офіційною гарантією виробника та допомагає з сервісним супроводом протягом усього періоду експлуатації.
+              {homeContent.guaranteeTextOne}
             </p>
             <p>
-              Після встановлення ми консультуємо щодо роботи інвертора, акумуляторів і сонячних панелей, допомагаємо масштабувати систему та швидко реагуємо на сервісні запити.
+              {homeContent.guaranteeTextTwo}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="section-shell py-14">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <span className="badge">Приклади</span>
-            <h2 className="section-title mt-3">Виконані проєкти</h2>
-          </div>
-          <Link href="/examples" className="text-sm font-semibold text-accent hover:text-ink">
-            Усі приклади
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
-          {cases.slice(0, 2).map((item) => (
-            <article key={item.slug} className="panel-card overflow-hidden">
-              <Image src={item.image} alt={item.title} width={900} height={560} className="h-52 w-full object-cover" />
-              <div className="p-6">
-                <div className="text-sm text-accent">
-                  {item.segment} - {item.location}
-                </div>
-                <h3 className="mt-2 text-xl font-semibold text-ink">{item.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-steel">{item.result}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+      <CasesCarousel cases={cases} badge={homeContent.casesBadge} title={homeContent.casesTitle} linkLabel={homeContent.casesLink} />
     </main>
   );
 }

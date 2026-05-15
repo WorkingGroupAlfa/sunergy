@@ -2,7 +2,7 @@
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
-import { categoryOrder, type Product, type ProductCategory } from '@/data/shop';
+import { type Product, type ProductCategory } from '@/data/shop';
 import { ProductCard } from '@/components/shop/product-card';
 import { useShop } from '@/components/shop/shop-provider';
 
@@ -46,7 +46,7 @@ function ProductCardSkeleton() {
 }
 
 export default function CatalogPage() {
-  const { products } = useShop();
+  const { products, categories } = useShop();
   const categoryRailRef = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [query, setQuery] = useState('');
@@ -57,8 +57,8 @@ export default function CatalogPage() {
   const deferredQuery = useDeferredValue(query);
 
   const availableCategories = useMemo(
-    () => categoryOrder.filter((category) => products.some((product) => product.category === category)),
-    [products]
+    () => categories.filter((category) => products.some((product) => product.category === category)),
+    [categories, products]
   );
 
   const normalizedQuery = deferredQuery.trim().toLowerCase();

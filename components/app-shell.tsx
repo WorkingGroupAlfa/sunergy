@@ -10,7 +10,7 @@ import { LeadPopup } from '@/components/lead-popup';
 
 function PublicFooter() {
   return (
-    <footer className="mt-14 border-t border-white/10 bg-[linear-gradient(140deg,#0b1f3d,#0f2e54)] text-blue-100">
+    <footer className="mt-0 border-t border-white/10 bg-[linear-gradient(140deg,#0b1f3d,#0f2e54)] text-blue-100 md:mt-14">
       <div className="section-shell grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_1fr]">
         <div>
           <div className="text-lg font-semibold text-white">SUNERGY SHOP</div>

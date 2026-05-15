@@ -80,6 +80,7 @@ export function CartClientPage() {
                 alt={product.title}
                 width={180}
                 height={140}
+                unoptimized={product.image.startsWith('data:image/')}
                 className={product.image.startsWith('/illustrations/') ? 'h-24 w-28 rounded-xl object-cover' : 'h-24 w-28 rounded-xl bg-frost object-contain'}
               />
               <div className="flex-1">

@@ -1,0 +1,60 @@
+export type HomeContent = {
+  heroTitle: string;
+  heroText: string;
+  catalogButton: string;
+  examplesButton: string;
+  contactsButton: string;
+  benefits: string[];
+  storageBadge: string;
+  storageTitle: string;
+  storageText: string;
+  productsBadge: string;
+  productsTitle: string;
+  productsLink: string;
+  brandsTitle: string;
+  guaranteeBadge: string;
+  guaranteeTitle: string;
+  guaranteeTextOne: string;
+  guaranteeTextTwo: string;
+  casesBadge: string;
+  casesTitle: string;
+  casesLink: string;
+};
+
+export const defaultHeroBenefits = [
+  'Сонячні станції під ключ будь якої складності.',
+  'Продаж інверторів, акумуляторів, сонячних панелей та ін.',
+  'Системи кріплень сонячних панелей',
+  'Готові енергетичні рішення для дому та бізнесу',
+];
+
+export const legacyHeroBenefits = [
+  'Готові рішення на 5, 15 і 30 кВт',
+  'Обране та кошик між сторінками',
+  'Окремі сторінки товару, прикладів і контактів',
+];
+
+export const defaultHomeContent: HomeContent = {
+  heroTitle: 'Енергетична вітрина для дому та бізнесу',
+  heroText: 'Сонячні панелі, інвертори, акумулятори та готові комплекти. Оберіть товар, відкрийте картку й додайте в обране або кошик.',
+  catalogButton: 'Перейти до каталогу',
+  examplesButton: 'Переглянути приклади',
+  contactsButton: 'Контакти',
+  benefits: defaultHeroBenefits,
+  storageBadge: 'Власне виробництво SUNERGY',
+  storageTitle: 'Акумулятори українського виробництва',
+  storageText:
+    'У цьому блоці буде лінійка LiFePO4 акумуляторів SUNERGY українського виробництва. Виробляємо в Україні, адаптуємо під домашні та бізнес-сценарії, забезпечуємо сервіс і масштабування системи.',
+  productsBadge: 'Товари вітрини',
+  productsTitle: 'Популярні позиції',
+  productsLink: 'Увесь каталог',
+  brandsTitle: 'Працюємо з брендами',
+  guaranteeBadge: 'Гарантія',
+  guaranteeTitle: 'Відповідаємо за систему після запуску',
+  guaranteeTextOne: 'SUNERGY підбирає обладнання з офіційною гарантією виробника та допомагає з сервісним супроводом протягом усього періоду експлуатації.',
+  guaranteeTextTwo:
+    'Після встановлення ми консультуємо щодо роботи інвертора, акумуляторів і сонячних панелей, допомагаємо масштабувати систему та швидко реагуємо на сервісні запити.',
+  casesBadge: 'Приклади',
+  casesTitle: 'Виконані проєкти',
+  casesLink: 'Усі приклади',
+};

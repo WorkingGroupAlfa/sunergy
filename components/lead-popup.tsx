@@ -2,7 +2,6 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { CheckCircle2, Phone, X, Zap } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
 
 const POPUP_STORAGE_KEY = 'sunergy_lead_popup_closed';
 const POPUP_DELAY_MS = 60_000;
@@ -92,24 +91,14 @@ export function LeadPopup() {
         <Phone className="h-5 w-5" />
       </button>
 
-      <AnimatePresence>
-        {isOpen ? (
-          <motion.div
+      {isOpen ? (
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-ink/55 px-4 py-6 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="lead-popup-title"
           >
-            <motion.div
-              className="relative w-full max-w-xl overflow-hidden rounded-[28px] border border-white/20 bg-white shadow-panel"
-              initial={{ opacity: 0, y: 18, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.98 }}
-              transition={{ duration: 0.24 }}
-            >
+            <div className="relative w-full max-w-xl overflow-hidden rounded-[28px] border border-white/20 bg-white shadow-panel">
               <button
                 type="button"
                 onClick={closePopup}
@@ -186,10 +175,9 @@ export function LeadPopup() {
                   </div>
                 ) : null}
               </form>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         ) : null}
-      </AnimatePresence>
     </>
   );
 }

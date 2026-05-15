@@ -60,6 +60,7 @@ export const ProductCard = memo(function ProductCard({ product, priority = false
           height={540}
           sizes="(min-width: 1280px) 31vw, (min-width: 768px) 46vw, 92vw"
           priority={priority}
+          unoptimized={product.image.startsWith('data:image/')}
           className={imageClass}
           onLoad={(event) => {
             const image = event.currentTarget;

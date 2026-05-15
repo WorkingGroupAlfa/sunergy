@@ -9,7 +9,8 @@ import { useShop } from '@/components/shop/shop-provider';
 const links = [
   { href: '/', label: 'Головна' },
   { href: '/catalog', label: 'Каталог' },
-  { href: '/examples', label: 'Приклади' },
+  { href: '/examples', label: 'Приклади наших робіт' },
+  { href: '/about', label: 'Про нас' },
   { href: '/contacts', label: 'Контакти' },
 ];
 
@@ -29,10 +30,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-line/80 bg-white/90 backdrop-blur-md shadow-[0_8px_24px_rgba(9,26,51,0.06)]">
       <div className="section-shell flex h-16 items-center justify-between gap-3">
         <Link href="/" className="inline-flex items-center" aria-label="SUNERGY.UA">
-          <Image src="/logo-sunergy.svg" alt="SUNERGY.UA" width={210} height={46} className="h-9 w-auto" priority />
+          <Image src="/logo-sunergy.svg" alt="SUNERGY.UA" width={260} height={60} className="h-11 w-auto sm:h-12" priority />
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-5 md:flex">
           {links.map((link) => (
             <Link
               key={link.href}

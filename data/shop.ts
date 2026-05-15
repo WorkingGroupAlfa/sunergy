@@ -3683,10 +3683,6 @@ export const brandLogos: BrandLogo[] = [
     logoUrl: "https://www.google.com/s2/favicons?domain=csisolar.com&sz=128"
   },
   {
-    name: "DAH Solar",
-    logoUrl: "https://www.google.com/s2/favicons?domain=dahsolarpv.com&sz=128"
-  },
-  {
     name: "Dahai",
     logoUrl: "https://www.google.com/s2/favicons?domain=dahaisolar.com&sz=128"
   },
@@ -3717,10 +3713,6 @@ export const brandLogos: BrandLogo[] = [
   {
     name: "Solis",
     logoUrl: "https://www.google.com/s2/favicons?domain=solisinverters.com&sz=128"
-  },
-  {
-    name: "Swi Solar",
-    logoUrl: "https://www.google.com/s2/favicons?domain=swi-solar.com&sz=128"
   }
 ];
 

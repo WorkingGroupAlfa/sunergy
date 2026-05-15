@@ -62,6 +62,7 @@ function FavoriteProductImage({ src, alt }: { src: string; alt: string }) {
       alt={alt}
       width={700}
       height={500}
+      unoptimized={src.startsWith('data:image/')}
       className={isRasterProductImage && isPortraitImage ? 'h-full w-full object-contain object-center' : 'h-full w-full object-cover object-center'}
       onLoad={(event) => {
         const image = event.currentTarget;

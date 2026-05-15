@@ -3,10 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BadgeCheck, FileText, Filter, ImageIcon, ListChecks, LockKeyhole, Pencil, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
-import { categoryOrder, type Product, type ProductAvailability, type ProductCategory } from '@/data/shop';
+import { ArrowLeft, BadgeCheck, BriefcaseBusiness, FileText, Filter, Home, ImageIcon, Info, ListChecks, LockKeyhole, Pencil, Plus, RotateCcw, Save, Tags, Trash2 } from 'lucide-react';
+import { type Product, type ProductAvailability, type ProductCategory } from '@/data/shop';
 import { formatPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
+import { ImageDropzone } from '@/components/admin/image-dropzone';
 
 type ProductFormState = {
   slug: string;
@@ -110,7 +111,7 @@ function formFromProduct(product: Product): ProductFormState {
 }
 
 export default function AdminPage() {
-  const { products, saveProduct, deleteProduct, resetProducts } = useShop();
+  const { products, categories, showCalculator, saveProduct, deleteProduct, resetProducts, saveCategory, deleteCategory, resetCategories, setShowCalculator } = useShop();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -121,10 +122,12 @@ export default function AdminPage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [categoryName, setCategoryName] = useState('');
+  const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
 
   const availableCategories = useMemo(
-    () => categoryOrder.filter((category) => products.some((product) => product.category === category)),
-    [products]
+    () => categories.filter((category) => products.some((product) => product.category === category)),
+    [categories, products]
   );
 
   useEffect(() => {
@@ -213,6 +216,42 @@ export default function AdminPage() {
     setMessage('Каталог скинуто');
   };
 
+  const startCategoryEdit = (category: ProductCategory) => {
+    setEditingCategory(category);
+    setCategoryName(category);
+    setMessage('');
+  };
+
+  const handleCategorySubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const nextCategory = categoryName.trim() as ProductCategory;
+    if (!nextCategory) return;
+
+    saveCategory(nextCategory, editingCategory ?? undefined);
+    setForm((prev) => (editingCategory && prev.category === editingCategory ? { ...prev, category: nextCategory } : prev));
+    setEditingCategory(null);
+    setCategoryName('');
+    setMessage('Категорію збережено');
+  };
+
+  const handleCategoryDelete = (category: ProductCategory) => {
+    if (!window.confirm(`Видалити категорію "${category}"?`)) return;
+    const deleted = deleteCategory(category);
+    setMessage(deleted ? 'Категорію видалено' : 'Спочатку перенесіть або видаліть товари з цієї категорії');
+    if (deleted && editingCategory === category) {
+      setEditingCategory(null);
+      setCategoryName('');
+    }
+  };
+
+  const handleCategoriesReset = () => {
+    if (!window.confirm('Скинути категорії до базового списку?')) return;
+    resetCategories();
+    setEditingCategory(null);
+    setCategoryName('');
+    setMessage('Категорії скинуто');
+  };
+
   const handleLogin = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -296,6 +335,18 @@ export default function AdminPage() {
               <Plus className="h-4 w-4" />
               <span className="ml-2">Новий</span>
             </button>
+            <Link href="/admin/works" className="btn-secondary">
+              <BriefcaseBusiness className="h-4 w-4" />
+              <span className="ml-2">Наші роботи</span>
+            </Link>
+            <Link href="/admin/home" className="btn-secondary">
+              <Home className="h-4 w-4" />
+              <span className="ml-2">Головна</span>
+            </Link>
+            <Link href="/admin/about" className="btn-secondary">
+              <Info className="h-4 w-4" />
+              <span className="ml-2">Про нас</span>
+            </Link>
             <button type="button" onClick={handleReset} className="btn-secondary">
               <RotateCcw className="h-4 w-4" />
               <span className="ml-2">Скинути</span>
@@ -362,6 +413,62 @@ export default function AdminPage() {
                 </div>
               </div>
             ) : null}
+
+            <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <input
+                type="checkbox"
+                checked={showCalculator}
+                onChange={(event) => {
+                  setShowCalculator(event.target.checked);
+                  setMessage(event.target.checked ? 'Калькулятор показано на головній' : 'Калькулятор приховано з головної');
+                }}
+                className="mt-1 h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent"
+              />
+              <span>
+                <span className="block text-sm font-semibold text-ink">Показувати калькулятор на головній</span>
+                <span className="mt-1 block text-xs leading-5 text-steel">Зніміть галочку, щоб тимчасово приховати блок з сайту.</span>
+              </span>
+            </label>
+
+            <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-steel">
+                  <Tags className="h-4 w-4 text-accent" />
+                  Категорії
+                </div>
+                <button type="button" onClick={handleCategoriesReset} className="text-xs font-semibold text-accent hover:text-ink">
+                  Скинути
+                </button>
+              </div>
+
+              <form onSubmit={handleCategorySubmit} className="mt-3 flex gap-2">
+                <input
+                  className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-accent"
+                  value={categoryName}
+                  onChange={(event) => setCategoryName(event.target.value)}
+                  placeholder="Нова категорія"
+                />
+                <button type="submit" className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-ink text-white transition hover:bg-accent" aria-label="Зберегти категорію">
+                  <Save className="h-4 w-4" />
+                </button>
+              </form>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {categories.map((category) => {
+                  const count = products.filter((product) => product.category === category).length;
+                  return (
+                    <span key={category} className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-ink ring-1 ring-slate-200">
+                      <button type="button" onClick={() => startCategoryEdit(category)} className="max-w-[160px] truncate hover:text-accent" title={category}>
+                        {category} ({count})
+                      </button>
+                      <button type="button" onClick={() => handleCategoryDelete(category)} className="rounded-full p-0.5 text-steel hover:bg-red-50 hover:text-red-600" aria-label={`Видалити ${category}`}>
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="divide-y divide-slate-100 overflow-auto lg:min-h-0">
@@ -376,7 +483,14 @@ export default function AdminPage() {
                   onClick={() => startEdit(product)}
                   className={`grid w-full grid-cols-[56px_1fr] gap-3 p-3 text-left transition hover:bg-slate-50 ${active ? 'bg-blue-50/70' : 'bg-white'}`}
                 >
-                  <Image src={product.image} alt={product.title} width={96} height={96} className="h-14 w-14 rounded-xl border border-slate-200 bg-frost object-cover" />
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    width={96}
+                    height={96}
+                    unoptimized={product.image.startsWith('data:image/')}
+                    className="h-14 w-14 rounded-xl border border-slate-200 bg-frost object-cover"
+                  />
                   <span className="min-w-0">
                     <span className="flex items-start justify-between gap-2">
                       <span className="truncate text-sm font-semibold text-ink">{product.title}</span>
@@ -461,7 +575,7 @@ export default function AdminPage() {
                   <label className="block">
                     <span className="mb-1.5 block text-xs font-semibold text-ink">Категорія</span>
                     <select className="input h-11" value={form.category} onChange={(event) => updateForm('category', event.target.value as ProductCategory)}>
-                      {categoryOrder.map((category) => (
+                      {categories.map((category) => (
                         <option key={category} value={category}>{category}</option>
                       ))}
                     </select>
@@ -490,10 +604,13 @@ export default function AdminPage() {
                     <span className="mb-1.5 block text-xs font-semibold text-ink">Відгуки</span>
                     <input className="input h-11" type="number" min="0" value={form.reviews} onChange={(event) => updateForm('reviews', event.target.value)} />
                   </label>
-                  <label className="block md:col-span-2 xl:col-span-3">
-                    <span className="mb-1.5 block text-xs font-semibold text-ink">Зображення</span>
-                    <input className="input h-11" value={form.image} onChange={(event) => updateForm('image', event.target.value)} placeholder="/illustrations/product-battery.svg" />
-                  </label>
+                  <ImageDropzone
+                    inputId="product-image"
+                    label="Зображення"
+                    value={form.image}
+                    fallback="/illustrations/product-battery.svg"
+                    onChange={(value) => updateForm('image', value)}
+                  />
                 </div>
               ) : null}
 
@@ -530,7 +647,14 @@ export default function AdminPage() {
                 Прев'ю
               </div>
               <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <Image src={form.image || '/illustrations/product-battery.svg'} alt={form.title || 'Товар'} width={420} height={280} className="h-44 w-full bg-frost object-cover" />
+                <Image
+                  src={form.image || '/illustrations/product-battery.svg'}
+                  alt={form.title || 'Товар'}
+                  width={420}
+                  height={280}
+                  unoptimized={form.image.startsWith('data:image/')}
+                  className="h-44 w-full bg-frost object-cover"
+                />
                 <div className="p-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${selectedAvailability.className}`}>
                     {selectedAvailability.label}

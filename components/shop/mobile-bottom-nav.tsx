@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Grid2x2, Home, Phone } from 'lucide-react';
+import { BookOpen, Grid2x2, Home, Info, Phone } from 'lucide-react';
 
 const links = [
   { href: '/', label: 'Головна', icon: Home },
   { href: '/catalog', label: 'Каталог', icon: Grid2x2 },
   { href: '/examples', label: 'Приклади', icon: BookOpen },
+  { href: '/about', label: 'Про нас', icon: Info },
   { href: '/contacts', label: 'Контакти', icon: Phone },
 ];
 
@@ -24,7 +25,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-[60] border-t border-line/90 bg-white/95 shadow-[0_-8px_30px_rgba(9,26,51,0.12)] backdrop-blur md:hidden">
-      <div className="mx-auto grid max-w-7xl grid-cols-4 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2">
+      <div className="mx-auto grid max-w-7xl grid-cols-5 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2">
         {links.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
