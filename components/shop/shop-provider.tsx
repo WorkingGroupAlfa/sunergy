@@ -96,7 +96,7 @@ const PRODUCTS_KEY = 'sunergy_admin_products_price_2026_05_01';
 const CATEGORIES_KEY = 'sunergy_admin_categories_2026_05_15';
 const CASES_KEY = 'sunergy_admin_cases_2026_05_15';
 const HOME_CONTENT_KEY = 'sunergy_admin_home_content_2026_05_15';
-const ABOUT_CONTENT_KEY = 'sunergy_admin_about_content_2026_05_15';
+const ABOUT_CONTENT_KEY = 'sunergy_admin_about_content_2026_05_15_b';
 const SHOW_CALCULATOR_KEY = 'sunergy_admin_show_calculator_2026_05_15';
 
 const ShopContext = createContext<ShopContextValue | null>(null);
