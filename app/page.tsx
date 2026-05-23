@@ -11,8 +11,17 @@ import { useShop } from '@/components/shop/shop-provider';
 
 export default function HomePage() {
   const { products, cases, homeContent, showCalculator } = useShop();
-  const featured = products.slice(0, 3);
-  const featuredStorage = products.filter((item) => item.category === 'Акумулятори' || item.category === 'Системи зберігання').slice(0, 3);
+  const getProductsBySlugs = (slugs: string[] | undefined) =>
+    slugs
+      ?.map((slug) => products.find((product) => product.slug === slug))
+      .filter((product): product is (typeof products)[number] => Boolean(product)) ?? [];
+  const selectedFeatured = getProductsBySlugs(homeContent.featuredProductSlugs);
+  const selectedStorage = getProductsBySlugs(homeContent.storageProductSlugs);
+  const featured = selectedFeatured.length > 0 ? selectedFeatured : products.slice(0, 3);
+  const featuredStorage =
+    selectedStorage.length > 0
+      ? selectedStorage
+      : products.filter((item) => item.category === 'Акумулятори' || item.category === 'Системи зберігання').slice(0, 3);
 
   return (
     <main>

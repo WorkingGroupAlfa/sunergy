@@ -1,5 +1,5 @@
 ﻿import Link from 'next/link';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import { ContactLeadForm } from '@/components/contact-lead-form';
 
 export default function ContactsPage() {
@@ -13,8 +13,7 @@ export default function ContactsPage() {
         <section className="panel-card p-6">
           <h2 className="text-xl font-semibold text-ink">Контактна інформація</h2>
           <div className="mt-4 space-y-3 text-sm text-steel">
-            <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-accent" /> +38 (099) 999-99-88</div>
-            <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-accent" /> info@mail.ua</div>
+            <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-accent" /> +380997345624</div>
             <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-accent" /> Україна, Київ</div>
           </div>
           <div className="mt-5 text-sm text-steel">Працюємо з домашніми та комерційними обʼєктами по всій Україні.</div>

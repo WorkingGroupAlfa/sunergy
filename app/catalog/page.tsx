@@ -108,6 +108,13 @@ export default function CatalogPage() {
   }, [categoryProducts, normalizedQuery]);
 
   useEffect(() => {
+    const initialSearch = new URLSearchParams(window.location.search).get('search');
+    if (initialSearch) {
+      setQuery(initialSearch);
+    }
+  }, []);
+
+  useEffect(() => {
     setVisibleCount(PAGE_SIZE);
     setLoadingMore(false);
   }, [selectedCategory, normalizedQuery]);

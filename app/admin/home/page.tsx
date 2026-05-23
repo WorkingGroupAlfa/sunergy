@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
-import { ArrowLeft, Eye, Home, LockKeyhole, RotateCcw, Save } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, Eye, Home, LockKeyhole, Plus, RotateCcw, Save, Search, Trash2 } from 'lucide-react';
 import { defaultHomeContent, type HomeContent } from '@/data/home-content';
+import { type Product } from '@/data/shop';
 import { useShop } from '@/components/shop/shop-provider';
+import { formatPrice } from '@/lib/utils';
 
 const ADMIN_PASSWORD = 'Vgz24';
 const ADMIN_AUTH_KEY = 'sunergy_admin_authenticated';
@@ -40,8 +42,97 @@ function TextField({ label, value, onChange, textarea = false }: TextFieldProps)
   );
 }
 
+type ProductPickerProps = {
+  title: string;
+  selectedSlugs: string[];
+  products: Product[];
+  onChange: (slugs: string[]) => void;
+};
+
+function ProductPicker({ title, selectedSlugs, products, onChange }: ProductPickerProps) {
+  const [query, setQuery] = useState('');
+  const selectedProducts = selectedSlugs
+    .map((slug) => products.find((product) => product.slug === slug))
+    .filter((product): product is Product => Boolean(product));
+  const normalizedQuery = query.trim().toLowerCase();
+  const availableProducts = useMemo(() => {
+    return products
+      .filter((product) => !selectedSlugs.includes(product.slug))
+      .filter((product) => {
+        if (!normalizedQuery) return true;
+        return `${product.title} ${product.brand} ${product.category} ${product.specs.join(' ')}`.toLowerCase().includes(normalizedQuery);
+      })
+      .slice(0, 12);
+  }, [normalizedQuery, products, selectedSlugs]);
+
+  const addProduct = (slug: string) => onChange([...selectedSlugs, slug]);
+  const removeProduct = (slug: string) => onChange(selectedSlugs.filter((item) => item !== slug));
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-semibold text-ink">{title}</h3>
+          <p className="mt-1 text-xs text-steel">{selectedProducts.length} товарів вибрано</p>
+        </div>
+      </div>
+
+      <div className="mt-3 flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 focus-within:border-accent focus-within:bg-white">
+        <Search className="h-4 w-4 text-steel" />
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Знайти товар у каталозі"
+          className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none"
+        />
+      </div>
+
+      {selectedProducts.length > 0 ? (
+        <div className="mt-3 space-y-2">
+          {selectedProducts.map((product) => (
+            <div key={product.slug} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold text-ink">{product.title}</div>
+                <div className="mt-0.5 text-xs text-steel">
+                  {product.brand} · {formatPrice(product.price)}
+                </div>
+              </div>
+              <button type="button" onClick={() => removeProduct(product.slug)} className="rounded-full p-2 text-steel hover:bg-red-50 hover:text-red-600" aria-label="Прибрати товар">
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 rounded-xl bg-slate-50 p-3 text-xs leading-5 text-steel">Якщо нічого не вибрано, сайт покаже стандартну автоматичну добірку.</p>
+      )}
+
+      <div className="mt-3 max-h-80 space-y-2 overflow-auto pr-1">
+        {availableProducts.map((product) => (
+          <button
+            key={product.slug}
+            type="button"
+            onClick={() => addProduct(product.slug)}
+            className="grid w-full grid-cols-[1fr_auto] gap-3 rounded-xl border border-slate-200 bg-white p-2 text-left transition hover:border-accent hover:bg-blue-50"
+          >
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold text-ink">{product.title}</span>
+              <span className="mt-0.5 block text-xs text-steel">
+                {product.brand} · {product.category}
+              </span>
+            </span>
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-white">
+              <Plus className="h-4 w-4" />
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminHomePage() {
-  const { homeContent, saveHomeContent, resetHomeContent } = useShop();
+  const { homeContent, saveHomeContent, resetHomeContent, products } = useShop();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -192,6 +283,12 @@ export default function AdminHomePage() {
                 <TextField label="Бейдж" value={form.storageBadge} onChange={(value) => updateForm('storageBadge', value)} />
                 <TextField label="Заголовок" value={form.storageTitle} onChange={(value) => updateForm('storageTitle', value)} />
                 <TextField label="Текст" value={form.storageText} onChange={(value) => updateForm('storageText', value)} textarea />
+                <ProductPicker
+                  title="Товари для секції акумуляторів"
+                  products={products}
+                  selectedSlugs={form.storageProductSlugs ?? []}
+                  onChange={(slugs) => updateForm('storageProductSlugs', slugs)}
+                />
               </div>
             </section>
 
@@ -201,6 +298,14 @@ export default function AdminHomePage() {
                 <TextField label="Бейдж товарів" value={form.productsBadge} onChange={(value) => updateForm('productsBadge', value)} />
                 <TextField label="Заголовок товарів" value={form.productsTitle} onChange={(value) => updateForm('productsTitle', value)} />
                 <TextField label="Посилання каталогу" value={form.productsLink} onChange={(value) => updateForm('productsLink', value)} />
+                <div className="md:col-span-2">
+                  <ProductPicker
+                    title="Товари для секції популярних позицій"
+                    products={products}
+                    selectedSlugs={form.featuredProductSlugs ?? []}
+                    onChange={(slugs) => updateForm('featuredProductSlugs', slugs)}
+                  />
+                </div>
                 <TextField label="Заголовок брендів" value={form.brandsTitle} onChange={(value) => updateForm('brandsTitle', value)} />
                 <TextField label="Бейдж проєктів" value={form.casesBadge} onChange={(value) => updateForm('casesBadge', value)} />
                 <TextField label="Заголовок проєктів" value={form.casesTitle} onChange={(value) => updateForm('casesTitle', value)} />

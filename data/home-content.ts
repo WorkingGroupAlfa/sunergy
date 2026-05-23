@@ -11,6 +11,8 @@ export type HomeContent = {
   productsBadge: string;
   productsTitle: string;
   productsLink: string;
+  featuredProductSlugs?: string[];
+  storageProductSlugs?: string[];
   brandsTitle: string;
   guaranteeBadge: string;
   guaranteeTitle: string;
@@ -48,6 +50,8 @@ export const defaultHomeContent: HomeContent = {
   productsBadge: 'Товари вітрини',
   productsTitle: 'Популярні позиції',
   productsLink: 'Увесь каталог',
+  featuredProductSlugs: [],
+  storageProductSlugs: [],
   brandsTitle: 'Працюємо з брендами',
   guaranteeBadge: 'Гарантія',
   guaranteeTitle: 'Відповідаємо за систему після запуску',

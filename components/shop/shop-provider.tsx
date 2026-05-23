@@ -21,6 +21,20 @@ function sortProductsByAvailability(items: Product[]) {
   });
 }
 
+function normalizeProductImages(product: Product, fallback = '/illustrations/product-battery.svg'): Product {
+  const mainImage = product.image?.trim() || fallback;
+  const gallery = Array.isArray(product.images)
+    ? product.images.map((image) => image.trim()).filter(Boolean)
+    : [];
+  const images = Array.from(new Set([mainImage, ...gallery]));
+
+  return {
+    ...product,
+    image: mainImage,
+    images: images.length > 1 ? images : undefined,
+  };
+}
+
 function hydrateStoredProducts(items: Product[]) {
   const sourceProductsBySlug = new Map(initialProducts.map((product) => [product.slug, product]));
   const storedProductsBySlug = new Map(items.map((product) => [product.slug, product]));
@@ -30,15 +44,17 @@ function hydrateStoredProducts(items: Product[]) {
     if (!storedProduct) return sourceProduct;
 
     return {
-      ...sourceProduct,
-      ...storedProduct,
-      image: storedProduct.image?.trim() || sourceProduct.image,
+      ...normalizeProductImages({
+        ...sourceProduct,
+        ...storedProduct,
+        image: storedProduct.image?.trim() || sourceProduct.image,
+      }, sourceProduct.image),
     };
   });
 
   const customProducts = items
     .filter((product) => !sourceProductsBySlug.has(product.slug) && product.slug && product.title)
-    .map((product) => ({ ...product, image: product.image?.trim() || '/illustrations/product-battery.svg' }));
+    .map((product) => normalizeProductImages(product));
 
   return [...customProducts, ...hydratedSourceProducts];
 }
@@ -54,6 +70,8 @@ function hydrateHomeContent(content: Partial<HomeContent>) {
     ...defaultHomeContent,
     ...content,
     benefits: sameList(benefits, legacyHeroBenefits) ? defaultHeroBenefits : benefits,
+    featuredProductSlugs: Array.isArray(content.featuredProductSlugs) ? content.featuredProductSlugs.filter(Boolean) : [],
+    storageProductSlugs: Array.isArray(content.storageProductSlugs) ? content.storageProductSlugs.filter(Boolean) : [],
   };
 }
 
@@ -66,6 +84,7 @@ type ShopContextValue = {
   showCalculator: boolean;
   favorites: string[];
   cart: CartMap;
+  storageReady: boolean;
   favoritesCount: number;
   cartCount: number;
   saveProduct: (product: Product) => void;
@@ -255,12 +274,14 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       showCalculator,
       favorites,
       cart,
+      storageReady,
       favoritesCount,
       cartCount,
       saveProduct: (product) => {
+        const normalizedProduct = normalizeProductImages(product);
         setProducts((prev) => {
-          const exists = prev.some((item) => item.slug === product.slug);
-          const next = exists ? prev.map((item) => (item.slug === product.slug ? product : item)) : [product, ...prev];
+          const exists = prev.some((item) => item.slug === normalizedProduct.slug);
+          const next = exists ? prev.map((item) => (item.slug === normalizedProduct.slug ? normalizedProduct : item)) : [normalizedProduct, ...prev];
           return sortProductsByAvailability(next);
         });
       },
@@ -304,7 +325,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       },
       deleteCase: (slug) => setCases((prev) => prev.filter((item) => item.slug !== slug)),
       resetCases: () => setCases([...initialCases]),
-      saveHomeContent: (content) => setHomeContent({ ...defaultHomeContent, ...content }),
+      saveHomeContent: (content) => setHomeContent(hydrateHomeContent(content)),
       resetHomeContent: () => setHomeContent(defaultHomeContent),
       saveAboutContent: (content) => setAboutContent({ ...defaultAboutContent, ...content }),
       resetAboutContent: () => setAboutContent(defaultAboutContent),
@@ -336,7 +357,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       },
       clearCart: () => setCart({}),
     };
-  }, [aboutContent, cart, cases, categories, favorites, homeContent, products, showCalculator]);
+  }, [aboutContent, cart, cases, categories, favorites, homeContent, products, showCalculator, storageReady]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 }

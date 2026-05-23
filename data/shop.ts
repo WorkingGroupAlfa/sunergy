@@ -13,6 +13,7 @@ export type Product = {
   rating: number;
   reviews: number;
   image: string;
+  images?: string[];
   shortDescription: string;
   description: string;
   specs: string[];

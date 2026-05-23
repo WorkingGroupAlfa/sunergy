@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import { ShopProvider } from '@/components/shop/shop-provider';
 import { SiteHeader } from '@/components/shop/site-header';
 import { MobileBottomNav } from '@/components/shop/mobile-bottom-nav';
@@ -33,8 +33,7 @@ function PublicFooter() {
         <div>
           <div className="text-sm uppercase tracking-[0.16em] text-blue-200">Зв'язок</div>
           <div className="mt-4 space-y-3 text-sm">
-            <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +38 (099) 999-99-88</div>
-            <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> info@mail.ua</div>
+            <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +380997345624</div>
             <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Київ, Україна</div>
           </div>
         </div>

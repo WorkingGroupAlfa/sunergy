@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BadgeCheck, BriefcaseBusiness, FileText, Filter, Home, ImageIcon, Info, ListChecks, LockKeyhole, Pencil, Plus, RotateCcw, Save, Tags, Trash2 } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, BadgeCheck, BriefcaseBusiness, FileText, Filter, Home, ImageIcon, Info, ListChecks, LockKeyhole, Pencil, Plus, RotateCcw, Save, Tags, Trash2, UploadCloud } from 'lucide-react';
 import { type Product, type ProductAvailability, type ProductCategory } from '@/data/shop';
 import { formatPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
@@ -20,6 +20,7 @@ type ProductFormState = {
   rating: string;
   reviews: string;
   image: string;
+  images: string;
   shortDescription: string;
   description: string;
   specs: string;
@@ -66,6 +67,7 @@ const emptyForm: ProductFormState = {
   rating: '4.8',
   reviews: '0',
   image: '/illustrations/product-battery.svg',
+  images: '',
   shortDescription: '',
   description: '',
   specs: '',
@@ -103,6 +105,7 @@ function formFromProduct(product: Product): ProductFormState {
     rating: String(product.rating),
     reviews: String(product.reviews),
     image: product.image,
+    images: listToText(product.images?.filter((image) => image !== product.image) ?? []),
     shortDescription: product.shortDescription,
     description: product.description,
     specs: listToText(product.specs),
@@ -124,6 +127,7 @@ export default function AdminPage() {
   const [message, setMessage] = useState('');
   const [categoryName, setCategoryName] = useState('');
   const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const availableCategories = useMemo(
     () => categories.filter((category) => products.some((product) => product.category === category)),
@@ -155,6 +159,34 @@ export default function AdminPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const addGalleryImages = async (files: FileList | null) => {
+    if (!files?.length) return;
+
+    const readers = Array.from(files)
+      .filter((file) => file.type.startsWith('image/'))
+      .map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result ?? ''));
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+          })
+      );
+
+    if (readers.length === 0) {
+      setMessage('Оберіть файли зображень');
+      return;
+    }
+
+    const uploadedImages = (await Promise.all(readers)).filter((value) => value.startsWith('data:image/'));
+    setForm((prev) => ({
+      ...prev,
+      images: listToText(Array.from(new Set([...textToList(prev.images), ...uploadedImages]))),
+    }));
+    setMessage(`Додано фото: ${uploadedImages.length}`);
+  };
+
   const startCreate = () => {
     setEditingSlug(null);
     setForm(emptyForm);
@@ -173,6 +205,8 @@ export default function AdminPage() {
     event.preventDefault();
 
     const nextSlug = form.slug.trim() || slugify(form.title);
+    const mainImage = form.image.trim() || '/illustrations/product-battery.svg';
+    const galleryImages = Array.from(new Set([mainImage, ...textToList(form.images)]));
     const product: Product = {
       slug: nextSlug,
       title: form.title.trim(),
@@ -183,7 +217,8 @@ export default function AdminPage() {
       oldPrice: form.oldPrice ? Number(form.oldPrice) : undefined,
       rating: Number(form.rating) || 0,
       reviews: Number(form.reviews) || 0,
-      image: form.image.trim() || '/illustrations/product-battery.svg',
+      image: mainImage,
+      images: galleryImages.length > 1 ? galleryImages : undefined,
       shortDescription: form.shortDescription.trim(),
       description: form.description.trim(),
       specs: textToList(form.specs),
@@ -611,6 +646,33 @@ export default function AdminPage() {
                     fallback="/illustrations/product-battery.svg"
                     onChange={(value) => updateForm('image', value)}
                   />
+                  <label className="block md:col-span-2 xl:col-span-3">
+                    <span className="mb-1.5 block text-xs font-semibold text-ink">Додаткові фото</span>
+                    <textarea
+                      className="input min-h-24 resize-y"
+                      value={form.images}
+                      onChange={(event) => updateForm('images', event.target.value)}
+                      placeholder="Одне посилання або data:image у кожному рядку"
+                    />
+                    <input
+                      ref={galleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(event) => {
+                        void addGalleryImages(event.target.files);
+                        event.target.value = '';
+                      }}
+                    />
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <button type="button" onClick={() => galleryInputRef.current?.click()} className="btn-secondary h-10 px-4">
+                        <UploadCloud className="h-4 w-4" />
+                        <span className="ml-2">Додати кілька фото</span>
+                      </button>
+                      <span className="text-xs text-steel">Превʼю картки завжди бере тільки основне зображення вище.</span>
+                    </div>
+                  </label>
                 </div>
               ) : null}
 
