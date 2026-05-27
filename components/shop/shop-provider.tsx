@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
 import {
   adminStateStorageKeys,
@@ -31,7 +31,7 @@ type ShopContextValue = {
   storageReady: boolean;
   favoritesCount: number;
   cartCount: number;
-  saveProduct: (product: Product) => void;
+  saveProduct: (product: Product, previousSlug?: string) => void;
   deleteProduct: (slug: string) => void;
   resetProducts: () => void;
   saveCategory: (category: ProductCategory, previousCategory?: ProductCategory) => void;
@@ -175,9 +175,13 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [cart, setCart] = useState<CartMap>({});
   const [storageReady, setStorageReady] = useState(false);
+  const adminStateRef = useRef<AdminState>(defaultAdminState);
+  const remoteSaveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const saveRevisionRef = useRef(0);
 
   const applyAdminState = useCallback((state: Partial<AdminState>) => {
     const normalized = normalizeAdminState(state);
+    adminStateRef.current = normalized;
     setProducts(normalized.products);
     setCategories(normalized.categories);
     setCases(normalized.cases);
@@ -190,29 +194,36 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
   const buildAdminState = useCallback(
     (overrides: Partial<AdminState> = {}) =>
       normalizeAdminState({
-        products,
-        categories,
-        cases,
-        homeContent,
-        aboutContent,
-        showCalculator,
+        ...adminStateRef.current,
         ...overrides,
       }),
-    [aboutContent, cases, categories, homeContent, products, showCalculator]
+    []
   );
 
   const persistAdminState = useCallback((state: Partial<AdminState>) => {
-    const localState = withAdminStateTimestamp(state);
+    const localState = withAdminStateTimestamp({
+      ...adminStateRef.current,
+      ...state,
+    });
+    const revision = saveRevisionRef.current + 1;
+    saveRevisionRef.current = revision;
+    adminStateRef.current = localState;
     writeLocalAdminState(localState);
 
-    void saveRemoteAdminState(localState)
-      .then((remoteState) => {
+    remoteSaveQueueRef.current = remoteSaveQueueRef.current
+      .catch(() => undefined)
+      .then(async () => {
+        const remoteState = await saveRemoteAdminState(localState);
+        if (revision !== saveRevisionRef.current) return;
+
+        adminStateRef.current = remoteState;
         writeLocalAdminState(remoteState);
+        applyAdminState(remoteState);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [applyAdminState]);
 
   useEffect(() => {
     let cancelled = false;
@@ -230,10 +241,11 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         const remoteState = await fetchRemoteAdminState();
         if (cancelled) return;
 
-        const localTime = getUpdatedAtTime(localSnapshot?.state.updatedAt);
+        const latestLocalState = adminStateRef.current;
+        const latestLocalTime = getUpdatedAtTime(latestLocalState.updatedAt);
         const remoteTime = getUpdatedAtTime(remoteState.updatedAt);
-        const shouldPromoteLocal = Boolean(localSnapshot && (localTime > remoteTime || (localSnapshot.hasLegacyData && remoteTime === 0)));
-        const chosenState = shouldPromoteLocal ? withAdminStateTimestamp(localSnapshot!.state) : remoteState;
+        const shouldPromoteLocal = latestLocalTime > remoteTime || Boolean(localSnapshot?.hasLegacyData && remoteTime === 0);
+        const chosenState = shouldPromoteLocal ? withAdminStateTimestamp(latestLocalState) : remoteState;
         const normalized = applyAdminState(chosenState);
         const personalState = readPersonalState(normalized.products);
 
@@ -286,18 +298,23 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       storageReady,
       favoritesCount,
       cartCount,
-      saveProduct: (product) => {
+      saveProduct: (product, previousSlug) => {
+        const currentState = adminStateRef.current;
         const normalizedProduct = normalizeProductImages(product);
-        const exists = products.some((item) => item.slug === normalizedProduct.slug);
+        const sourceProducts =
+          previousSlug && previousSlug !== normalizedProduct.slug
+            ? currentState.products.filter((item) => item.slug !== previousSlug)
+            : currentState.products;
+        const exists = sourceProducts.some((item) => item.slug === normalizedProduct.slug);
         const nextProducts = sortProductsByAvailability(
-          exists ? products.map((item) => (item.slug === normalizedProduct.slug ? normalizedProduct : item)) : [normalizedProduct, ...products]
+          exists ? sourceProducts.map((item) => (item.slug === normalizedProduct.slug ? normalizedProduct : item)) : [normalizedProduct, ...sourceProducts]
         );
 
         setProducts(nextProducts);
         persistAdminState(buildAdminState({ products: nextProducts }));
       },
       deleteProduct: (slug) => {
-        const nextProducts = products.filter((item) => item.slug !== slug);
+        const nextProducts = adminStateRef.current.products.filter((item) => item.slug !== slug);
 
         setProducts(nextProducts);
         setFavorites((prev) => prev.filter((item) => item !== slug));
@@ -315,24 +332,26 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         persistAdminState(buildAdminState({ products: nextProducts }));
       },
       saveCategory: (category, previousCategory) => {
+        const currentState = adminStateRef.current;
         const nextCategory = category.trim() as ProductCategory;
         if (!nextCategory) return;
 
-        const withoutPrevious = previousCategory ? categories.filter((item) => item !== previousCategory) : categories;
+        const withoutPrevious = previousCategory ? currentState.categories.filter((item) => item !== previousCategory) : currentState.categories;
         const nextCategories = Array.from(new Set([...withoutPrevious, nextCategory]));
         const nextProducts =
           previousCategory && previousCategory !== nextCategory
-            ? sortProductsByAvailability(products.map((product) => (product.category === previousCategory ? { ...product, category: nextCategory } : product)))
-            : products;
+            ? sortProductsByAvailability(currentState.products.map((product) => (product.category === previousCategory ? { ...product, category: nextCategory } : product)))
+            : currentState.products;
 
         setCategories(nextCategories);
         setProducts(nextProducts);
         persistAdminState(buildAdminState({ categories: nextCategories, products: nextProducts }));
       },
       deleteCategory: (category) => {
-        if (products.some((product) => product.category === category)) return false;
+        const currentState = adminStateRef.current;
+        if (currentState.products.some((product) => product.category === category)) return false;
 
-        const nextCategories = categories.filter((item) => item !== category);
+        const nextCategories = currentState.categories.filter((item) => item !== category);
         setCategories(nextCategories);
         persistAdminState(buildAdminState({ categories: nextCategories }));
         return true;
@@ -344,7 +363,8 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         persistAdminState(buildAdminState({ categories: nextCategories }));
       },
       saveCase: (item, previousSlug) => {
-        const withoutPrevious = previousSlug ? cases.filter((caseItem) => caseItem.slug !== previousSlug) : cases;
+        const currentCases = adminStateRef.current.cases;
+        const withoutPrevious = previousSlug ? currentCases.filter((caseItem) => caseItem.slug !== previousSlug) : currentCases;
         const exists = withoutPrevious.some((caseItem) => caseItem.slug === item.slug);
         const nextCases = exists ? withoutPrevious.map((caseItem) => (caseItem.slug === item.slug ? item : caseItem)) : [item, ...withoutPrevious];
 
@@ -352,7 +372,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         persistAdminState(buildAdminState({ cases: nextCases }));
       },
       deleteCase: (slug) => {
-        const nextCases = cases.filter((item) => item.slug !== slug);
+        const nextCases = adminStateRef.current.cases.filter((item) => item.slug !== slug);
 
         setCases(nextCases);
         persistAdminState(buildAdminState({ cases: nextCases }));

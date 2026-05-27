@@ -223,11 +223,7 @@ export default function AdminPage() {
       badges: textToList(form.badges),
     };
 
-    if (editingSlug && editingSlug !== product.slug) {
-      deleteProduct(editingSlug);
-    }
-
-    saveProduct(product);
+    saveProduct(product, editingSlug ?? undefined);
     setEditingSlug(product.slug);
     setForm(formFromProduct(product));
     setMessage('Збережено');
@@ -261,7 +257,7 @@ export default function AdminPage() {
     if (!nextCategory) return;
 
     saveCategory(nextCategory, editingCategory ?? undefined);
-    setForm((prev) => (editingCategory && prev.category === editingCategory ? { ...prev, category: nextCategory } : prev));
+    setForm((prev) => (editingCategory && prev.category !== editingCategory ? prev : { ...prev, category: nextCategory }));
     setEditingCategory(null);
     setCategoryName('');
     setMessage('Категорію збережено');

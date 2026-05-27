@@ -12,6 +12,12 @@ const REDIS_ADMIN_STATE_KEY = 'sunergy:admin-state';
 
 let memoryState: AdminState | null = null;
 
+function getUpdatedAtTime(value: string | undefined) {
+  if (!value) return 0;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
 async function redisCommand<T>(command: unknown[]) {
   if (!REDIS_REST_URL || !REDIS_REST_TOKEN) return null;
 
@@ -89,7 +95,23 @@ export async function readAdminState() {
 }
 
 export async function writeAdminState(state: Partial<AdminState>) {
-  const nextState = withAdminStateTimestamp(state);
+  const currentState = await readAdminState();
+  const incomingTime = getUpdatedAtTime(state.updatedAt);
+  const currentTime = getUpdatedAtTime(currentState.updatedAt);
+
+  if (incomingTime > 0 && currentTime > incomingTime) {
+    return currentState;
+  }
+
+  const nextState = withAdminStateTimestamp(
+    {
+      ...currentState,
+      ...state,
+      homeContent: state.homeContent ? { ...currentState.homeContent, ...state.homeContent } : currentState.homeContent,
+      aboutContent: state.aboutContent ? { ...currentState.aboutContent, ...state.aboutContent } : currentState.aboutContent,
+    },
+    incomingTime > 0 ? state.updatedAt : undefined
+  );
   memoryState = nextState;
 
   try {
