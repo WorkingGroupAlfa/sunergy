@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
-import { formatPrice } from '@/lib/utils';
+import { formatOrderTotal, formatPrice, isInquiryPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
 
 export function CartClientPage() {
@@ -23,7 +23,8 @@ export function CartClientPage() {
     })
     .filter((item): item is { product: (typeof products)[number]; qty: number } => item !== null);
 
-  const total = items.reduce((sum, item) => sum + item.product.price * item.qty, 0);
+  const hasInquiryItems = items.some((item) => isInquiryPrice(item.product.price));
+  const total = items.reduce((sum, item) => (isInquiryPrice(item.product.price) ? sum : sum + item.product.price * item.qty), 0);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,7 +104,7 @@ export function CartClientPage() {
 
         <aside className="panel-card h-fit p-5">
           <div className="text-steel">Разом</div>
-          <div className="mt-2 text-2xl font-semibold text-ink">{formatPrice(total)}</div>
+          <div className="mt-2 text-2xl font-semibold text-ink">{formatOrderTotal(total, hasInquiryItems)}</div>
           <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="firstName" className="text-sm font-medium text-ink">

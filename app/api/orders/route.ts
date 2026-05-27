@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { readAdminState } from '@/lib/admin-state-server';
-import { formatPrice } from '@/lib/utils';
+import { formatOrderTotal, formatPrice, isInquiryPrice } from '@/lib/utils';
 
 type OrderRequest = {
   customer?: {
@@ -25,9 +25,18 @@ function createOrderId() {
   return `SUN-${stamp}-${suffix}`;
 }
 
-function buildTelegramMessage(orderId: string, payload: Required<OrderRequest>, orderItems: Array<{ title: string; qty: number; price: number }>, total: number) {
+function buildTelegramMessage(
+  orderId: string,
+  payload: Required<OrderRequest>,
+  orderItems: Array<{ title: string; qty: number; price: number }>,
+  total: number,
+  hasInquiryItems: boolean
+) {
   const itemLines = orderItems
-    .map((item, index) => `${index + 1}. ${item.title}\n   Кількість: ${item.qty}\n   Сума: ${formatPrice(item.price * item.qty)}`)
+    .map((item, index) => {
+      const lineTotal = isInquiryPrice(item.price) ? formatPrice(item.price) : formatPrice(item.price * item.qty);
+      return `${index + 1}. ${item.title}\n   Кількість: ${item.qty}\n   Сума: ${lineTotal}`;
+    })
     .join('\n\n');
 
   return [
@@ -39,7 +48,7 @@ function buildTelegramMessage(orderId: string, payload: Required<OrderRequest>, 
     'Товари:',
     itemLines,
     '',
-    `Разом: ${formatPrice(total)}`,
+    `Разом: ${formatOrderTotal(total, hasInquiryItems)}`,
   ].join('\n');
 }
 
@@ -98,9 +107,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'У кошику немає актуальних товарів.' }, { status: 400 });
     }
 
-    const total = orderItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const hasInquiryItems = orderItems.some((item) => isInquiryPrice(item.price));
+    const total = orderItems.reduce((sum, item) => (isInquiryPrice(item.price) ? sum : sum + item.price * item.qty), 0);
     const orderId = createOrderId();
-    const message = buildTelegramMessage(orderId, { customer, items: body.items }, orderItems, total);
+    const message = buildTelegramMessage(orderId, { customer, items: body.items }, orderItems, total, hasInquiryItems);
 
     await sendTelegramMessage(message);
 
