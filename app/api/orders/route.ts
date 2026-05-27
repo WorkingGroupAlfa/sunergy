@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { products } from '@/data/shop';
+import { readAdminState } from '@/lib/admin-state-server';
 import { formatPrice } from '@/lib/utils';
 
 type OrderRequest = {
@@ -13,8 +13,6 @@ type OrderRequest = {
     qty?: number;
   }>;
 };
-
-const productsBySlug = new Map(products.map((product) => [product.slug, product]));
 
 function cleanText(value: unknown) {
   return typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
@@ -72,6 +70,8 @@ async function sendTelegramMessage(text: string) {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as OrderRequest;
+    const { products } = await readAdminState();
+    const productsBySlug = new Map(products.map((product) => [product.slug, product]));
     const customer = {
       firstName: cleanText(body.customer?.firstName),
       lastName: cleanText(body.customer?.lastName),

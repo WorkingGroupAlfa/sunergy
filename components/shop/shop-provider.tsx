@@ -1,79 +1,23 @@
 'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { cases as initialCases, categoryOrder as initialCategories, products as initialProducts, type CaseItem, type Product, type ProductCategory } from '@/data/shop';
-import { defaultHeroBenefits, defaultHomeContent, legacyHeroBenefits, type HomeContent } from '@/data/home-content';
-import { defaultAboutContent, type AboutContent } from '@/data/about-content';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
+import {
+  adminStateStorageKeys,
+  defaultAdminState,
+  hydrateAboutContent,
+  hydrateHomeContent,
+  normalizeAdminState,
+  normalizeProductImages,
+  sortProductsByAvailability,
+  withAdminStateTimestamp,
+  type AdminState,
+} from '@/lib/admin-state';
+import { type CaseItem, type Product, type ProductCategory } from '@/data/shop';
+import { type HomeContent } from '@/data/home-content';
+import { type AboutContent } from '@/data/about-content';
 
 type CartMap = Record<string, number>;
-
-const availabilitySortOrder: Record<NonNullable<Product['availability']>, number> = {
-  available: 0,
-  preorder: 1,
-  out_of_stock: 2,
-};
-
-function sortProductsByAvailability(items: Product[]) {
-  return [...items].sort((a, b) => {
-    const availabilityDiff = availabilitySortOrder[a.availability ?? 'available'] - availabilitySortOrder[b.availability ?? 'available'];
-    if (availabilityDiff !== 0) return availabilityDiff;
-    return a.title.localeCompare(b.title);
-  });
-}
-
-function normalizeProductImages(product: Product, fallback = '/illustrations/product-battery.svg'): Product {
-  const mainImage = product.image?.trim() || fallback;
-  const gallery = Array.isArray(product.images)
-    ? product.images.map((image) => image.trim()).filter(Boolean)
-    : [];
-  const images = Array.from(new Set([mainImage, ...gallery]));
-
-  return {
-    ...product,
-    image: mainImage,
-    images: images.length > 1 ? images : undefined,
-  };
-}
-
-function hydrateStoredProducts(items: Product[]) {
-  const sourceProductsBySlug = new Map(initialProducts.map((product) => [product.slug, product]));
-  const storedProductsBySlug = new Map(items.map((product) => [product.slug, product]));
-
-  const hydratedSourceProducts = initialProducts.map((sourceProduct) => {
-    const storedProduct = storedProductsBySlug.get(sourceProduct.slug);
-    if (!storedProduct) return sourceProduct;
-
-    return {
-      ...normalizeProductImages({
-        ...sourceProduct,
-        ...storedProduct,
-        image: storedProduct.image?.trim() || sourceProduct.image,
-      }, sourceProduct.image),
-    };
-  });
-
-  const customProducts = items
-    .filter((product) => !sourceProductsBySlug.has(product.slug) && product.slug && product.title)
-    .map((product) => normalizeProductImages(product));
-
-  return [...customProducts, ...hydratedSourceProducts];
-}
-
-function sameList(a: string[], b: string[]) {
-  return a.length === b.length && a.every((item, index) => item === b[index]);
-}
-
-function hydrateHomeContent(content: Partial<HomeContent>) {
-  const benefits = Array.isArray(content.benefits) ? content.benefits : defaultHomeContent.benefits;
-
-  return {
-    ...defaultHomeContent,
-    ...content,
-    benefits: sameList(benefits, legacyHeroBenefits) ? defaultHeroBenefits : benefits,
-    featuredProductSlugs: Array.isArray(content.featuredProductSlugs) ? content.featuredProductSlugs.filter(Boolean) : [],
-    storageProductSlugs: Array.isArray(content.storageProductSlugs) ? content.storageProductSlugs.filter(Boolean) : [],
-  };
-}
 
 type ShopContextValue = {
   products: Product[];
@@ -111,145 +55,210 @@ type ShopContextValue = {
 
 const FAVORITES_KEY = 'sunergy_favorites';
 const CART_KEY = 'sunergy_cart';
-const PRODUCTS_KEY = 'sunergy_admin_products_price_2026_05_01';
-const CATEGORIES_KEY = 'sunergy_admin_categories_2026_05_15';
-const CASES_KEY = 'sunergy_admin_cases_2026_05_15';
-const HOME_CONTENT_KEY = 'sunergy_admin_home_content_2026_05_15';
-const ABOUT_CONTENT_KEY = 'sunergy_admin_about_content_2026_05_15_b';
-const SHOW_CALCULATOR_KEY = 'sunergy_admin_show_calculator_2026_05_15';
 
 const ShopContext = createContext<ShopContextValue | null>(null);
 
+function getUpdatedAtTime(value: string | undefined) {
+  if (!value) return 0;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function readJson<T>(key: string): T | undefined {
+  const raw = localStorage.getItem(key);
+  if (!raw) return undefined;
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return undefined;
+  }
+}
+
+function readLocalAdminSnapshot() {
+  const products = readJson<Product[]>(adminStateStorageKeys.products);
+  const categories = readJson<ProductCategory[]>(adminStateStorageKeys.categories);
+  const cases = readJson<CaseItem[]>(adminStateStorageKeys.cases);
+  const homeContent = readJson<Partial<HomeContent>>(adminStateStorageKeys.homeContent);
+  const aboutContent = readJson<Partial<AboutContent>>(adminStateStorageKeys.aboutContent);
+  const rawShowCalculator = localStorage.getItem(adminStateStorageKeys.showCalculator);
+  const rawMeta = localStorage.getItem(adminStateStorageKeys.meta);
+  const meta = readJson<{ updatedAt?: string }>(adminStateStorageKeys.meta);
+  const hasAdminData = Boolean(products || categories || cases || homeContent || aboutContent || rawShowCalculator !== null);
+
+  if (!hasAdminData && !rawMeta) return null;
+
+  const state = normalizeAdminState({
+    ...(products ? { products } : {}),
+    ...(categories ? { categories } : {}),
+    ...(cases ? { cases } : {}),
+    ...(homeContent ? { homeContent } : {}),
+    ...(aboutContent ? { aboutContent } : {}),
+    ...(rawShowCalculator !== null ? { showCalculator: rawShowCalculator === 'true' } : {}),
+    ...(meta?.updatedAt ? { updatedAt: meta.updatedAt } : {}),
+  });
+
+  return {
+    state,
+    hasLegacyData: hasAdminData && !rawMeta,
+  };
+}
+
+function writeLocalAdminState(state: AdminState) {
+  try {
+    localStorage.setItem(adminStateStorageKeys.products, JSON.stringify(state.products));
+    localStorage.setItem(adminStateStorageKeys.categories, JSON.stringify(state.categories));
+    localStorage.setItem(adminStateStorageKeys.cases, JSON.stringify(state.cases));
+    localStorage.setItem(adminStateStorageKeys.homeContent, JSON.stringify(state.homeContent));
+    localStorage.setItem(adminStateStorageKeys.aboutContent, JSON.stringify(state.aboutContent));
+    localStorage.setItem(adminStateStorageKeys.showCalculator, JSON.stringify(state.showCalculator));
+    localStorage.setItem(adminStateStorageKeys.meta, JSON.stringify({ updatedAt: state.updatedAt ?? null }));
+  } catch (error) {
+    console.warn('Unable to save admin state to localStorage:', error);
+  }
+}
+
+function readPersonalState(productList: Product[]) {
+  const currentSlugs = new Set(productList.map((product) => product.slug));
+  const rawFavorites = readJson<string[]>(FAVORITES_KEY);
+  const rawCart = readJson<CartMap>(CART_KEY);
+
+  const favorites = Array.isArray(rawFavorites) ? rawFavorites.filter((slug) => currentSlugs.has(slug)) : [];
+  const cart =
+    rawCart && typeof rawCart === 'object'
+      ? Object.fromEntries(Object.entries(rawCart).filter(([slug]) => currentSlugs.has(slug)))
+      : {};
+
+  return { favorites, cart };
+}
+
+async function fetchRemoteAdminState() {
+  const response = await fetch(`/api/admin-state?ts=${Date.now()}`, {
+    cache: 'no-store',
+    headers: { 'Cache-Control': 'no-cache' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Admin state request failed: ${response.status}`);
+  }
+
+  return normalizeAdminState((await response.json()) as Partial<AdminState>);
+}
+
+async function saveRemoteAdminState(state: AdminState) {
+  const password = sessionStorage.getItem(ADMIN_PASSWORD_KEY) || ADMIN_PASSWORD;
+  const response = await fetch('/api/admin-state', {
+    method: 'PUT',
+    cache: 'no-store',
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      'x-admin-password': password,
+    },
+    body: JSON.stringify(state),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Admin state save failed: ${response.status}`);
+  }
+
+  return normalizeAdminState((await response.json()) as Partial<AdminState>);
+}
+
 export function ShopProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(() => sortProductsByAvailability(initialProducts));
-  const [categories, setCategories] = useState<ProductCategory[]>(() => [...initialCategories]);
-  const [cases, setCases] = useState<CaseItem[]>(() => [...initialCases]);
-  const [homeContent, setHomeContent] = useState<HomeContent>(defaultHomeContent);
-  const [aboutContent, setAboutContent] = useState<AboutContent>(defaultAboutContent);
-  const [showCalculator, setShowCalculator] = useState(false);
+  const [products, setProducts] = useState<Product[]>(defaultAdminState.products);
+  const [categories, setCategories] = useState<ProductCategory[]>(defaultAdminState.categories);
+  const [cases, setCases] = useState<CaseItem[]>(defaultAdminState.cases);
+  const [homeContent, setHomeContent] = useState<HomeContent>(defaultAdminState.homeContent);
+  const [aboutContent, setAboutContent] = useState<AboutContent>(defaultAdminState.aboutContent);
+  const [showCalculator, setShowCalculatorState] = useState(defaultAdminState.showCalculator);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [cart, setCart] = useState<CartMap>({});
   const [storageReady, setStorageReady] = useState(false);
 
-  useEffect(() => {
-    const rawProducts = localStorage.getItem(PRODUCTS_KEY);
-    const rawCategories = localStorage.getItem(CATEGORIES_KEY);
-    const rawCases = localStorage.getItem(CASES_KEY);
-    const rawHomeContent = localStorage.getItem(HOME_CONTENT_KEY);
-    const rawAboutContent = localStorage.getItem(ABOUT_CONTENT_KEY);
-    const rawShowCalculator = localStorage.getItem(SHOW_CALCULATOR_KEY);
-    const rawFavorites = localStorage.getItem(FAVORITES_KEY);
-    const rawCart = localStorage.getItem(CART_KEY);
+  const applyAdminState = useCallback((state: Partial<AdminState>) => {
+    const normalized = normalizeAdminState(state);
+    setProducts(normalized.products);
+    setCategories(normalized.categories);
+    setCases(normalized.cases);
+    setHomeContent(normalized.homeContent);
+    setAboutContent(normalized.aboutContent);
+    setShowCalculatorState(normalized.showCalculator);
+    return normalized;
+  }, []);
 
-    if (rawProducts) {
-      try {
-        const parsed = JSON.parse(rawProducts) as Product[];
-        setProducts(Array.isArray(parsed) ? sortProductsByAvailability(hydrateStoredProducts(parsed)) : sortProductsByAvailability(initialProducts));
-      } catch {
-        setProducts(sortProductsByAvailability(initialProducts));
-      }
-    }
+  const buildAdminState = useCallback(
+    (overrides: Partial<AdminState> = {}) =>
+      normalizeAdminState({
+        products,
+        categories,
+        cases,
+        homeContent,
+        aboutContent,
+        showCalculator,
+        ...overrides,
+      }),
+    [aboutContent, cases, categories, homeContent, products, showCalculator]
+  );
 
-    if (rawCategories) {
-      try {
-        const parsed = JSON.parse(rawCategories) as ProductCategory[];
-        setCategories(Array.isArray(parsed) ? parsed.filter(Boolean) : [...initialCategories]);
-      } catch {
-        setCategories([...initialCategories]);
-      }
-    }
+  const persistAdminState = useCallback((state: Partial<AdminState>) => {
+    const localState = withAdminStateTimestamp(state);
+    writeLocalAdminState(localState);
 
-    if (rawCases) {
-      try {
-        const parsed = JSON.parse(rawCases) as CaseItem[];
-        setCases(Array.isArray(parsed) ? parsed : [...initialCases]);
-      } catch {
-        setCases([...initialCases]);
-      }
-    }
-
-    if (rawHomeContent) {
-      try {
-        const parsed = JSON.parse(rawHomeContent) as Partial<HomeContent>;
-        setHomeContent(hydrateHomeContent(parsed));
-      } catch {
-        setHomeContent(defaultHomeContent);
-      }
-    }
-
-    if (rawAboutContent) {
-      try {
-        const parsed = JSON.parse(rawAboutContent) as Partial<AboutContent>;
-        setAboutContent({
-          ...defaultAboutContent,
-          ...parsed,
-          socials: Array.isArray(parsed.socials) ? parsed.socials : defaultAboutContent.socials,
-        });
-      } catch {
-        setAboutContent(defaultAboutContent);
-      }
-    }
-
-    if (rawShowCalculator) {
-      setShowCalculator(rawShowCalculator === 'true');
-    }
-
-    if (rawFavorites) {
-      try {
-        const parsed = JSON.parse(rawFavorites) as string[];
-        const currentSlugs = new Set(products.map((product) => product.slug));
-        setFavorites(Array.isArray(parsed) ? parsed.filter((slug) => currentSlugs.has(slug)) : []);
-      } catch {
-        setFavorites([]);
-      }
-    }
-
-    if (rawCart) {
-      try {
-        const parsed = JSON.parse(rawCart) as CartMap;
-        const currentSlugs = new Set(products.map((product) => product.slug));
-        const currentCart =
-          parsed && typeof parsed === 'object'
-            ? Object.fromEntries(Object.entries(parsed).filter(([slug]) => currentSlugs.has(slug)))
-            : {};
-        setCart(currentCart);
-      } catch {
-        setCart({});
-      }
-    }
-
-    setStorageReady(true);
+    void saveRemoteAdminState(localState)
+      .then((remoteState) => {
+        writeLocalAdminState(remoteState);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   useEffect(() => {
-    if (!storageReady) return;
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-  }, [products, storageReady]);
+    let cancelled = false;
 
-  useEffect(() => {
-    if (!storageReady) return;
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-  }, [categories, storageReady]);
+    async function loadState() {
+      const localSnapshot = readLocalAdminSnapshot();
+      const provisionalState = localSnapshot?.state ?? defaultAdminState;
+      const provisional = applyAdminState(provisionalState);
+      const provisionalPersonalState = readPersonalState(provisional.products);
 
-  useEffect(() => {
-    if (!storageReady) return;
-    localStorage.setItem(CASES_KEY, JSON.stringify(cases));
-  }, [cases, storageReady]);
+      setFavorites(provisionalPersonalState.favorites);
+      setCart(provisionalPersonalState.cart);
 
-  useEffect(() => {
-    if (!storageReady) return;
-    localStorage.setItem(HOME_CONTENT_KEY, JSON.stringify(homeContent));
-  }, [homeContent, storageReady]);
+      try {
+        const remoteState = await fetchRemoteAdminState();
+        if (cancelled) return;
 
-  useEffect(() => {
-    if (!storageReady) return;
-    localStorage.setItem(ABOUT_CONTENT_KEY, JSON.stringify(aboutContent));
-  }, [aboutContent, storageReady]);
+        const localTime = getUpdatedAtTime(localSnapshot?.state.updatedAt);
+        const remoteTime = getUpdatedAtTime(remoteState.updatedAt);
+        const shouldPromoteLocal = Boolean(localSnapshot && (localTime > remoteTime || (localSnapshot.hasLegacyData && remoteTime === 0)));
+        const chosenState = shouldPromoteLocal ? withAdminStateTimestamp(localSnapshot!.state) : remoteState;
+        const normalized = applyAdminState(chosenState);
+        const personalState = readPersonalState(normalized.products);
 
-  useEffect(() => {
-    if (!storageReady) return;
-    localStorage.setItem(SHOW_CALCULATOR_KEY, JSON.stringify(showCalculator));
-  }, [showCalculator, storageReady]);
+        setFavorites(personalState.favorites);
+        setCart(personalState.cart);
+        writeLocalAdminState(normalized);
+
+        if (shouldPromoteLocal) {
+          persistAdminState(normalized);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (!cancelled) {
+          setStorageReady(true);
+        }
+      }
+    }
+
+    void loadState();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyAdminState, persistAdminState]);
 
   useEffect(() => {
     if (!storageReady) return;
@@ -279,57 +288,109 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       cartCount,
       saveProduct: (product) => {
         const normalizedProduct = normalizeProductImages(product);
-        setProducts((prev) => {
-          const exists = prev.some((item) => item.slug === normalizedProduct.slug);
-          const next = exists ? prev.map((item) => (item.slug === normalizedProduct.slug ? normalizedProduct : item)) : [normalizedProduct, ...prev];
-          return sortProductsByAvailability(next);
-        });
+        const exists = products.some((item) => item.slug === normalizedProduct.slug);
+        const nextProducts = sortProductsByAvailability(
+          exists ? products.map((item) => (item.slug === normalizedProduct.slug ? normalizedProduct : item)) : [normalizedProduct, ...products]
+        );
+
+        setProducts(nextProducts);
+        persistAdminState(buildAdminState({ products: nextProducts }));
       },
       deleteProduct: (slug) => {
-        setProducts((prev) => prev.filter((item) => item.slug !== slug));
+        const nextProducts = products.filter((item) => item.slug !== slug);
+
+        setProducts(nextProducts);
         setFavorites((prev) => prev.filter((item) => item !== slug));
         setCart((prev) => {
           const next = { ...prev };
           delete next[slug];
           return next;
         });
+        persistAdminState(buildAdminState({ products: nextProducts }));
       },
-      resetProducts: () => setProducts(sortProductsByAvailability(initialProducts)),
+      resetProducts: () => {
+        const nextProducts = defaultAdminState.products;
+
+        setProducts(nextProducts);
+        persistAdminState(buildAdminState({ products: nextProducts }));
+      },
       saveCategory: (category, previousCategory) => {
         const nextCategory = category.trim() as ProductCategory;
         if (!nextCategory) return;
 
-        setCategories((prev) => {
-          const withoutPrevious = previousCategory ? prev.filter((item) => item !== previousCategory) : prev;
-          return Array.from(new Set([...withoutPrevious, nextCategory]));
-        });
+        const withoutPrevious = previousCategory ? categories.filter((item) => item !== previousCategory) : categories;
+        const nextCategories = Array.from(new Set([...withoutPrevious, nextCategory]));
+        const nextProducts =
+          previousCategory && previousCategory !== nextCategory
+            ? sortProductsByAvailability(products.map((product) => (product.category === previousCategory ? { ...product, category: nextCategory } : product)))
+            : products;
 
-        if (previousCategory && previousCategory !== nextCategory) {
-          setProducts((prev) =>
-            sortProductsByAvailability(prev.map((product) => (product.category === previousCategory ? { ...product, category: nextCategory } : product)))
-          );
-        }
+        setCategories(nextCategories);
+        setProducts(nextProducts);
+        persistAdminState(buildAdminState({ categories: nextCategories, products: nextProducts }));
       },
       deleteCategory: (category) => {
         if (products.some((product) => product.category === category)) return false;
-        setCategories((prev) => prev.filter((item) => item !== category));
+
+        const nextCategories = categories.filter((item) => item !== category);
+        setCategories(nextCategories);
+        persistAdminState(buildAdminState({ categories: nextCategories }));
         return true;
       },
-      resetCategories: () => setCategories([...initialCategories]),
-      saveCase: (item, previousSlug) => {
-        setCases((prev) => {
-          const withoutPrevious = previousSlug ? prev.filter((caseItem) => caseItem.slug !== previousSlug) : prev;
-          const exists = withoutPrevious.some((caseItem) => caseItem.slug === item.slug);
-          return exists ? withoutPrevious.map((caseItem) => (caseItem.slug === item.slug ? item : caseItem)) : [item, ...withoutPrevious];
-        });
+      resetCategories: () => {
+        const nextCategories = defaultAdminState.categories;
+
+        setCategories(nextCategories);
+        persistAdminState(buildAdminState({ categories: nextCategories }));
       },
-      deleteCase: (slug) => setCases((prev) => prev.filter((item) => item.slug !== slug)),
-      resetCases: () => setCases([...initialCases]),
-      saveHomeContent: (content) => setHomeContent(hydrateHomeContent(content)),
-      resetHomeContent: () => setHomeContent(defaultHomeContent),
-      saveAboutContent: (content) => setAboutContent({ ...defaultAboutContent, ...content }),
-      resetAboutContent: () => setAboutContent(defaultAboutContent),
-      setShowCalculator,
+      saveCase: (item, previousSlug) => {
+        const withoutPrevious = previousSlug ? cases.filter((caseItem) => caseItem.slug !== previousSlug) : cases;
+        const exists = withoutPrevious.some((caseItem) => caseItem.slug === item.slug);
+        const nextCases = exists ? withoutPrevious.map((caseItem) => (caseItem.slug === item.slug ? item : caseItem)) : [item, ...withoutPrevious];
+
+        setCases(nextCases);
+        persistAdminState(buildAdminState({ cases: nextCases }));
+      },
+      deleteCase: (slug) => {
+        const nextCases = cases.filter((item) => item.slug !== slug);
+
+        setCases(nextCases);
+        persistAdminState(buildAdminState({ cases: nextCases }));
+      },
+      resetCases: () => {
+        const nextCases = defaultAdminState.cases;
+
+        setCases(nextCases);
+        persistAdminState(buildAdminState({ cases: nextCases }));
+      },
+      saveHomeContent: (content) => {
+        const nextHomeContent = hydrateHomeContent(content);
+
+        setHomeContent(nextHomeContent);
+        persistAdminState(buildAdminState({ homeContent: nextHomeContent }));
+      },
+      resetHomeContent: () => {
+        const nextHomeContent = defaultAdminState.homeContent;
+
+        setHomeContent(nextHomeContent);
+        persistAdminState(buildAdminState({ homeContent: nextHomeContent }));
+      },
+      saveAboutContent: (content) => {
+        const nextAboutContent = hydrateAboutContent(content);
+
+        setAboutContent(nextAboutContent);
+        persistAdminState(buildAdminState({ aboutContent: nextAboutContent }));
+      },
+      resetAboutContent: () => {
+        const nextAboutContent = defaultAdminState.aboutContent;
+
+        setAboutContent(nextAboutContent);
+        persistAdminState(buildAdminState({ aboutContent: nextAboutContent }));
+      },
+      setShowCalculator: (nextValue) => {
+        setShowCalculatorState(nextValue);
+        persistAdminState(buildAdminState({ showCalculator: nextValue }));
+      },
       isFavorite: (slug) => favorites.includes(slug),
       toggleFavorite: (slug) => {
         setFavorites((prev) => (prev.includes(slug) ? prev.filter((item) => item !== slug) : [...prev, slug]));
@@ -357,7 +418,19 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       },
       clearCart: () => setCart({}),
     };
-  }, [aboutContent, cart, cases, categories, favorites, homeContent, products, showCalculator, storageReady]);
+  }, [
+    aboutContent,
+    buildAdminState,
+    cart,
+    cases,
+    categories,
+    favorites,
+    homeContent,
+    persistAdminState,
+    products,
+    showCalculator,
+    storageReady,
+  ]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 }

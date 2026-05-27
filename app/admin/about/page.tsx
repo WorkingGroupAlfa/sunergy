@@ -7,9 +7,7 @@ import { ArrowLeft, Eye, LockKeyhole, RotateCcw, Save } from 'lucide-react';
 import { defaultAboutContent, type AboutContent } from '@/data/about-content';
 import { useShop } from '@/components/shop/shop-provider';
 import { ImageDropzone } from '@/components/admin/image-dropzone';
-
-const ADMIN_PASSWORD = 'Vgz24';
-const ADMIN_AUTH_KEY = 'sunergy_admin_authenticated';
+import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
 
 function socialsToText(items: AboutContent['socials']) {
   return items.map((item) => `${item.label}|${item.href}`).join('\n');
@@ -78,6 +76,7 @@ export default function AdminAboutPage() {
 
     if (password === ADMIN_PASSWORD) {
       sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
       setIsAuthenticated(true);
       setLoginError('');
       setPassword('');

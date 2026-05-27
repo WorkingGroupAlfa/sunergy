@@ -7,9 +7,7 @@ import { defaultHomeContent, type HomeContent } from '@/data/home-content';
 import { type Product } from '@/data/shop';
 import { useShop } from '@/components/shop/shop-provider';
 import { formatPrice } from '@/lib/utils';
-
-const ADMIN_PASSWORD = 'Vgz24';
-const ADMIN_AUTH_KEY = 'sunergy_admin_authenticated';
+import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
 
 function listToText(items: string[]) {
   return items.join('\n');
@@ -161,6 +159,7 @@ export default function AdminHomePage() {
 
     if (password === ADMIN_PASSWORD) {
       sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
       setIsAuthenticated(true);
       setLoginError('');
       setPassword('');

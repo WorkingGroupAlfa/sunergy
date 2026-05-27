@@ -7,11 +7,9 @@ import { ArrowLeft, BriefcaseBusiness, ImageIcon, LockKeyhole, Plus, RotateCcw, 
 import { type CaseItem } from '@/data/shop';
 import { useShop } from '@/components/shop/shop-provider';
 import { ImageDropzone } from '@/components/admin/image-dropzone';
+import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
 
 type CaseFormState = CaseItem;
-
-const ADMIN_PASSWORD = 'Vgz24';
-const ADMIN_AUTH_KEY = 'sunergy_admin_authenticated';
 
 const emptyCase: CaseFormState = {
   slug: '',
@@ -73,6 +71,7 @@ export default function AdminWorksPage() {
 
     if (password === ADMIN_PASSWORD) {
       sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
       setIsAuthenticated(true);
       setLoginError('');
       setPassword('');

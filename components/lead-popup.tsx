@@ -5,8 +5,8 @@ import { CheckCircle2, Phone, X, Zap } from 'lucide-react';
 
 const POPUP_STORAGE_KEY = 'sunergy_lead_popup_closed';
 const POPUP_DELAY_MS = 60_000;
-const CONTACT_PHONE_DISPLAY = '093 000 00 00';
-const CONTACT_PHONE_HREF = 'tel:+380930000000';
+const CONTACT_PHONE_DISPLAY = '+380997345624';
+const CONTACT_PHONE_HREF = 'tel:+380997345624';
 
 type SubmitState = 'idle' | 'sending' | 'success' | 'error';
 

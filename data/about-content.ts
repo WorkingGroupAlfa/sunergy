@@ -20,8 +20,8 @@ export const defaultAboutContent: AboutContent = {
     'SUNERGY.UA допомагає клієнтам отримувати стабільну енергію для дому та бізнесу. Ми підбираємо сонячні станції, інвертори, акумулятори, системи кріплень і готові комплекти під конкретні задачі, супроводжуючи проєкт від консультації до запуску.',
   socialsTitle: 'Ми в соцмережах',
   socials: [
-    { label: 'Instagram', href: 'https://instagram.com/' },
-    { label: 'Facebook', href: 'https://facebook.com/' },
-    { label: 'Telegram', href: 'https://t.me/' },
+    { label: 'Instagram', href: 'https://www.instagram.com/sunergyua?igsh=MW5ybzI2eWZza28yNQ==' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@sunergy.ua?_r=1&_t=ZS-96NgNvkeIlh' },
+    { label: 'Telegram', href: 'https://t.me/sunergyua' },
   ],
 };

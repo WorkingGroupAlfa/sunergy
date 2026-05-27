@@ -8,6 +8,7 @@ import { type Product, type ProductAvailability, type ProductCategory } from '@/
 import { formatPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
 import { ImageDropzone } from '@/components/admin/image-dropzone';
+import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
 
 type ProductFormState = {
   slug: string;
@@ -29,9 +30,6 @@ type ProductFormState = {
 
 type EditorTab = 'main' | 'content' | 'details';
 type CategoryFilter = ProductCategory | 'all';
-
-const ADMIN_PASSWORD = 'Vgz24';
-const ADMIN_AUTH_KEY = 'sunergy_admin_authenticated';
 
 const availabilityOptions: Array<{ value: ProductAvailability; label: string; className: string }> = [
   { value: 'available', label: 'Є в наявності', className: 'bg-emerald-50 text-emerald-700 ring-emerald-100' },
@@ -292,6 +290,7 @@ export default function AdminPage() {
 
     if (password === ADMIN_PASSWORD) {
       sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
       setIsAuthenticated(true);
       setLoginError('');
       setPassword('');
