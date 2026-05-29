@@ -8,6 +8,7 @@ import {
   type Product,
   type ProductCategory,
 } from '@/data/shop';
+import { compareStableText } from '@/lib/utils';
 
 export type AdminState = {
   products: Product[];
@@ -53,7 +54,7 @@ export function sortProductsByAvailability(items: Product[]) {
   return [...items].sort((a, b) => {
     const availabilityDiff = availabilitySortOrder[a.availability ?? 'available'] - availabilitySortOrder[b.availability ?? 'available'];
     if (availabilityDiff !== 0) return availabilityDiff;
-    return a.title.localeCompare(b.title);
+    return compareStableText(a.title, b.title);
   });
 }
 
@@ -73,29 +74,45 @@ export function normalizeProductImages(product: Product, fallback = '/illustrati
 
 function hydrateStoredProducts(items: Product[]) {
   const sourceProductsBySlug = new Map(initialProducts.map((product) => [product.slug, product]));
+  const sourceProductsByTitle = new Map(initialProducts.map((product) => [product.title.normalize('NFKD').toLowerCase(), product]));
+  const hydratedProductsBySlug = new Map<string, Product>();
 
-  return items
-    .filter((product) => product?.slug && product?.title)
-    .map((product) => {
-      const sourceProduct = sourceProductsBySlug.get(product.slug);
-      return normalizeProductImages(
-        {
-          ...(sourceProduct ?? product),
-          ...product,
-          image: product.image?.trim() || sourceProduct?.image || product.image,
-        },
-        sourceProduct?.image || product.image
-      );
-    });
+  for (const product of items) {
+    if (!product?.slug || !product?.title) continue;
+
+    const sourceProduct = sourceProductsBySlug.get(product.slug) ?? sourceProductsByTitle.get(product.title.normalize('NFKD').toLowerCase());
+    const canonicalSlug = sourceProduct?.slug ?? product.slug;
+    const hydratedProduct = normalizeProductImages(
+      {
+        ...(sourceProduct ?? product),
+        ...product,
+        slug: canonicalSlug,
+        image: product.image?.trim() || sourceProduct?.image || product.image,
+      },
+      sourceProduct?.image || product.image
+    );
+
+    hydratedProductsBySlug.set(canonicalSlug, hydratedProduct);
+  }
+
+  const missingSourceProducts = initialProducts
+    .filter((product) => !hydratedProductsBySlug.has(product.slug))
+    .map((product) => normalizeProductImages(product, product.image));
+
+  return [...hydratedProductsBySlug.values(), ...missingSourceProducts];
 }
 
 function hydrateCases(items: CaseItem[]) {
-  return items
+  const hydratedCases = items
     .filter((item) => item?.slug && item?.title)
     .map((item) => ({
       ...item,
       image: item.image?.trim() || '/illustrations/case-home.svg',
     }));
+  const hydratedSlugs = new Set(hydratedCases.map((item) => item.slug));
+  const missingSourceCases = initialCases.filter((item) => !hydratedSlugs.has(item.slug));
+
+  return [...hydratedCases, ...missingSourceCases];
 }
 
 function sameList(a: string[], b: string[]) {
@@ -130,9 +147,10 @@ export function normalizeAdminState(content: AdminStateInput | undefined): Admin
   const products = Array.isArray(source.products)
     ? sortProductsByAvailability(hydrateStoredProducts(source.products))
     : defaultAdminState.products;
-  const categories = Array.isArray(source.categories)
+  const storedCategories = Array.isArray(source.categories)
     ? source.categories.map((category) => String(category).trim()).filter(Boolean) as ProductCategory[]
-    : defaultAdminState.categories;
+    : [];
+  const categories = Array.from(new Set([...storedCategories, ...initialCategories]));
   const cases = Array.isArray(source.cases) ? hydrateCases(source.cases) : defaultAdminState.cases;
   const updatedAt = typeof source.updatedAt === 'string' && source.updatedAt ? source.updatedAt : undefined;
 

@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react';
 import { type Product, type ProductCategory } from '@/data/shop';
 import { ProductCard } from '@/components/shop/product-card';
 import { useShop } from '@/components/shop/shop-provider';
+import { compareStableText } from '@/lib/utils';
 
 type CategoryFilter = ProductCategory | 'all';
 
@@ -102,7 +103,7 @@ export default function CatalogPage() {
         return { product, score };
       })
       .filter((item) => item.score < 8)
-      .sort((a, b) => a.score - b.score || a.product.title.localeCompare(b.product.title))
+      .sort((a, b) => a.score - b.score || compareStableText(a.product.title, b.product.title))
       .slice(0, 3)
       .map((item) => item.product);
   }, [categoryProducts, normalizedQuery]);

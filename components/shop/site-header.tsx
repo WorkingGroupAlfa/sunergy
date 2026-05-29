@@ -6,6 +6,7 @@ import { Heart, Search, ShoppingCart, X } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { FormEvent, useMemo, useState } from 'react';
 import { useShop } from '@/components/shop/shop-provider';
+import { compareStableText } from '@/lib/utils';
 
 const links = [
   { href: '/', label: 'Головна' },
@@ -53,7 +54,7 @@ export function SiteHeader() {
         return { product, score };
       })
       .filter((item) => item.score < 8)
-      .sort((a, b) => a.score - b.score || a.product.title.localeCompare(b.product.title))
+      .sort((a, b) => a.score - b.score || compareStableText(a.product.title, b.product.title))
       .slice(0, 4)
       .map((item) => item.product);
   }, [normalizedQuery, products]);

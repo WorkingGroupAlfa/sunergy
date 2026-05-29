@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, BadgeCheck, BriefcaseBusiness, FileText, Filter, Home, ImageIcon, Info, ListChecks, LockKeyhole, Pencil, Plus, RotateCcw, Save, Tags, Trash2, UploadCloud } from 'lucide-react';
 import { type Product, type ProductAvailability, type ProductCategory } from '@/data/shop';
-import { formatPrice } from '@/lib/utils';
+import { compareStableText, formatPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
 import { ImageDropzone } from '@/components/admin/image-dropzone';
 import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
@@ -142,7 +142,7 @@ export default function AdminPage() {
       .sort((a, b) => {
         const availabilityDiff = availabilitySortOrder[a.availability ?? 'available'] - availabilitySortOrder[b.availability ?? 'available'];
         if (availabilityDiff !== 0) return availabilityDiff;
-        return a.title.localeCompare(b.title);
+        return compareStableText(a.title, b.title);
       })
       .filter((product) => {
         if (selectedCategory !== 'all' && product.category !== selectedCategory) return false;
