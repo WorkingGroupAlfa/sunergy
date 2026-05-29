@@ -18,6 +18,7 @@ export type AdminState = {
   aboutContent: AboutContent;
   showCalculator: boolean;
   updatedAt?: string;
+  catalogSignature?: string;
 };
 
 type AdminStateInput = Omit<Partial<AdminState>, 'homeContent' | 'aboutContent'> & {
@@ -41,6 +42,12 @@ const availabilitySortOrder: Record<NonNullable<Product['availability']>, number
   out_of_stock: 2,
 };
 
+const sourceCatalogSignature = [
+  initialProducts.map((product) => product.slug).sort().join('|'),
+  initialCategories.slice().sort().join('|'),
+  initialCases.map((item) => item.slug).sort().join('|'),
+].join('::');
+
 export const defaultAdminState: AdminState = {
   products: sortProductsByAvailability(initialProducts),
   categories: [...initialCategories],
@@ -48,6 +55,7 @@ export const defaultAdminState: AdminState = {
   homeContent: defaultHomeContent,
   aboutContent: defaultAboutContent,
   showCalculator: false,
+  catalogSignature: sourceCatalogSignature,
 };
 
 export function sortProductsByAvailability(items: Product[]) {
@@ -72,7 +80,7 @@ export function normalizeProductImages(product: Product, fallback = '/illustrati
   };
 }
 
-function hydrateStoredProducts(items: Product[]) {
+function hydrateStoredProducts(items: Product[], shouldMergeSourceProducts: boolean) {
   const sourceProductsBySlug = new Map(initialProducts.map((product) => [product.slug, product]));
   const sourceProductsByTitle = new Map(initialProducts.map((product) => [product.title.normalize('NFKD').toLowerCase(), product]));
   const hydratedProductsBySlug = new Map<string, Product>();
@@ -80,7 +88,9 @@ function hydrateStoredProducts(items: Product[]) {
   for (const product of items) {
     if (!product?.slug || !product?.title) continue;
 
-    const sourceProduct = sourceProductsBySlug.get(product.slug) ?? sourceProductsByTitle.get(product.title.normalize('NFKD').toLowerCase());
+    const sourceProduct =
+      sourceProductsBySlug.get(product.slug) ??
+      (shouldMergeSourceProducts ? sourceProductsByTitle.get(product.title.normalize('NFKD').toLowerCase()) : undefined);
     const canonicalSlug = sourceProduct?.slug ?? product.slug;
     const hydratedProduct = normalizeProductImages(
       {
@@ -95,6 +105,8 @@ function hydrateStoredProducts(items: Product[]) {
     hydratedProductsBySlug.set(canonicalSlug, hydratedProduct);
   }
 
+  if (!shouldMergeSourceProducts) return [...hydratedProductsBySlug.values()];
+
   const missingSourceProducts = initialProducts
     .filter((product) => !hydratedProductsBySlug.has(product.slug))
     .map((product) => normalizeProductImages(product, product.image));
@@ -102,13 +114,15 @@ function hydrateStoredProducts(items: Product[]) {
   return [...hydratedProductsBySlug.values(), ...missingSourceProducts];
 }
 
-function hydrateCases(items: CaseItem[]) {
+function hydrateCases(items: CaseItem[], shouldMergeSourceCases: boolean) {
   const hydratedCases = items
     .filter((item) => item?.slug && item?.title)
     .map((item) => ({
       ...item,
       image: item.image?.trim() || '/illustrations/case-home.svg',
     }));
+  if (!shouldMergeSourceCases) return hydratedCases;
+
   const hydratedSlugs = new Set(hydratedCases.map((item) => item.slug));
   const missingSourceCases = initialCases.filter((item) => !hydratedSlugs.has(item.slug));
 
@@ -144,14 +158,18 @@ export function hydrateAboutContent(content: Partial<AboutContent> | undefined):
 
 export function normalizeAdminState(content: AdminStateInput | undefined): AdminState {
   const source = content ?? {};
+  const storedCatalogSignature = typeof source.catalogSignature === 'string' ? source.catalogSignature : undefined;
+  const shouldMergeSourceState = storedCatalogSignature !== sourceCatalogSignature;
   const products = Array.isArray(source.products)
-    ? sortProductsByAvailability(hydrateStoredProducts(source.products))
+    ? sortProductsByAvailability(hydrateStoredProducts(source.products, shouldMergeSourceState))
     : defaultAdminState.products;
   const storedCategories = Array.isArray(source.categories)
     ? source.categories.map((category) => String(category).trim()).filter(Boolean) as ProductCategory[]
     : [];
-  const categories = Array.from(new Set([...storedCategories, ...initialCategories]));
-  const cases = Array.isArray(source.cases) ? hydrateCases(source.cases) : defaultAdminState.cases;
+  const categories = Array.isArray(source.categories)
+    ? Array.from(new Set([...storedCategories, ...(shouldMergeSourceState ? initialCategories : [])]))
+    : defaultAdminState.categories;
+  const cases = Array.isArray(source.cases) ? hydrateCases(source.cases, shouldMergeSourceState) : defaultAdminState.cases;
   const updatedAt = typeof source.updatedAt === 'string' && source.updatedAt ? source.updatedAt : undefined;
 
   return {
@@ -161,6 +179,7 @@ export function normalizeAdminState(content: AdminStateInput | undefined): Admin
     homeContent: hydrateHomeContent(source.homeContent),
     aboutContent: hydrateAboutContent(source.aboutContent),
     showCalculator: source.showCalculator === true,
+    catalogSignature: sourceCatalogSignature,
     ...(updatedAt ? { updatedAt } : {}),
   };
 }

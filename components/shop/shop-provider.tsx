@@ -83,7 +83,7 @@ function readLocalAdminSnapshot() {
   const aboutContent = readJson<Partial<AboutContent>>(adminStateStorageKeys.aboutContent);
   const rawShowCalculator = localStorage.getItem(adminStateStorageKeys.showCalculator);
   const rawMeta = localStorage.getItem(adminStateStorageKeys.meta);
-  const meta = readJson<{ updatedAt?: string }>(adminStateStorageKeys.meta);
+  const meta = readJson<{ updatedAt?: string; catalogSignature?: string }>(adminStateStorageKeys.meta);
   const hasAdminData = Boolean(products || categories || cases || homeContent || aboutContent || rawShowCalculator !== null);
 
   if (!hasAdminData && !rawMeta) return null;
@@ -96,6 +96,7 @@ function readLocalAdminSnapshot() {
     ...(aboutContent ? { aboutContent } : {}),
     ...(rawShowCalculator !== null ? { showCalculator: rawShowCalculator === 'true' } : {}),
     ...(meta?.updatedAt ? { updatedAt: meta.updatedAt } : {}),
+    ...(meta?.catalogSignature ? { catalogSignature: meta.catalogSignature } : {}),
   });
 
   return {
@@ -112,7 +113,7 @@ function writeLocalAdminState(state: AdminState) {
     localStorage.setItem(adminStateStorageKeys.homeContent, JSON.stringify(state.homeContent));
     localStorage.setItem(adminStateStorageKeys.aboutContent, JSON.stringify(state.aboutContent));
     localStorage.setItem(adminStateStorageKeys.showCalculator, JSON.stringify(state.showCalculator));
-    localStorage.setItem(adminStateStorageKeys.meta, JSON.stringify({ updatedAt: state.updatedAt ?? null }));
+    localStorage.setItem(adminStateStorageKeys.meta, JSON.stringify({ updatedAt: state.updatedAt ?? null, catalogSignature: state.catalogSignature ?? null }));
   } catch (error) {
     console.warn('Unable to save admin state to localStorage:', error);
   }
