@@ -5,6 +5,10 @@ import { AppShell } from '@/components/app-shell';
 export const metadata: Metadata = {
   title: 'SUNERGY SHOP',
   description: 'Магазин-вітрина сонячних панелей, інверторів і акумуляторів.',
+  icons: {
+    icon: [{ url: '/logo-sunergy.svg', type: 'image/svg+xml' }],
+    shortcut: ['/logo-sunergy.svg'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
