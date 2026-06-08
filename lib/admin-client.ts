@@ -14,7 +14,7 @@ export type AdminDraftStatus = {
 
 async function parseError(response: Response) {
   const body = (await response.json().catch(() => null)) as { error?: string } | null;
-  return body?.error || `Admin request failed: ${response.status}`;
+  return body?.error || `Не вдалося виконати дію: ${response.status}`;
 }
 
 function notifyAdminStateChanged() {
@@ -143,7 +143,7 @@ export async function uploadAdminAsset(file: File) {
   }
 
   const body = (await response.json()) as { url?: string };
-  if (!body.url) throw new Error('Image upload did not return a URL.');
+  if (!body.url) throw new Error('Не вдалося отримати посилання на фото.');
 
   notifyAdminStateChanged();
   return body.url;

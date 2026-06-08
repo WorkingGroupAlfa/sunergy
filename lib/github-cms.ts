@@ -247,7 +247,7 @@ async function commitFilesToBranch(config: GitHubConfig, branch: string, files: 
 async function commitStateToDraft(state: AdminState, message: string) {
   const config = getGitHubConfig();
   if (!config) {
-    throw new Error('GitHub CMS is not configured.');
+    throw new Error('Збереження ще не налаштовано.');
   }
 
   const files = contentFilesFromState(state);
@@ -307,15 +307,15 @@ export async function writeDraftAdminState(state: AdminState, message = 'Update 
 export async function uploadDraftAsset(file: File) {
   const config = getGitHubConfig();
   if (!config) {
-    throw new Error('GitHub CMS is not configured.');
+    throw new Error('Збереження ще не налаштовано.');
   }
 
   if (!file.type.startsWith('image/')) {
-    throw new Error('Only image uploads are supported.');
+    throw new Error('Можна завантажувати лише зображення.');
   }
 
   if (file.size > 4 * 1024 * 1024) {
-    throw new Error('Image is still too large after optimization. Use a smaller source image.');
+    throw new Error('Фото все ще завелике. Оберіть менше зображення.');
   }
 
   await ensureDraftBranch(config);
@@ -367,7 +367,7 @@ export async function getDraftStatus(): Promise<DraftStatus> {
 
 export async function publishDraft() {
   const config = getGitHubConfig();
-  if (!config) throw new Error('GitHub CMS is not configured.');
+  if (!config) throw new Error('Збереження ще не налаштовано.');
 
   const draftHead = await ensureDraftBranch(config);
   const baseHead = await getBranchHead(config, config.baseBranch);
@@ -409,7 +409,7 @@ export async function publishDraft() {
 
 export async function discardDraft() {
   const config = getGitHubConfig();
-  if (!config) throw new Error('GitHub CMS is not configured.');
+  if (!config) throw new Error('Збереження ще не налаштовано.');
 
   const baseHead = await getBranchHead(config, config.baseBranch);
   if (!baseHead) throw new Error(`Base branch ${config.baseBranch} was not found.`);

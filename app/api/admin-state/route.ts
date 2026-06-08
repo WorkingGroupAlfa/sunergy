@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   if (!isAuthorizedRequest(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: noStoreHeaders });
+    return NextResponse.json({ error: 'Потрібно увійти знову' }, { status: 401, headers: noStoreHeaders });
   }
 
   try {
@@ -29,6 +29,6 @@ export async function PUT(request: Request) {
     return NextResponse.json(state, { headers: noStoreHeaders });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Unable to save admin state' }, { status: 500, headers: noStoreHeaders });
+    return NextResponse.json({ error: 'Не вдалося зберегти зміни' }, { status: 500, headers: noStoreHeaders });
   }
 }

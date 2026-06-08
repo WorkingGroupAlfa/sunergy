@@ -10,7 +10,7 @@ const noStoreHeaders = {
 
 export async function GET(request: Request) {
   if (!isAuthorizedRequest(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: noStoreHeaders });
+    return NextResponse.json({ error: 'Потрібно увійти знову' }, { status: 401, headers: noStoreHeaders });
   }
 
   try {
@@ -18,6 +18,6 @@ export async function GET(request: Request) {
     return NextResponse.json(status, { headers: noStoreHeaders });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Unable to read draft status' }, { status: 500, headers: noStoreHeaders });
+    return NextResponse.json({ error: 'Не вдалося перевірити зміни' }, { status: 500, headers: noStoreHeaders });
   }
 }

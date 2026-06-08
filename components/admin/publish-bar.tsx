@@ -5,10 +5,11 @@ import { CloudUpload, RotateCcw } from 'lucide-react';
 import { discardAdminDraft, getAdminDraftStatus, publishAdminDraft, type AdminDraftStatus } from '@/lib/admin-client';
 
 function getStatusLabel(status: AdminDraftStatus | null) {
-  if (!status) return 'Перевіряємо чернетку...';
-  if (!status.configured) return 'GitHub CMS ще не налаштовано';
-  if (!status.hasPendingChanges) return 'Немає неопублікованих змін';
-  return `${status.changedFiles.length} файлів у чернетці`;
+  if (!status) return 'Перевіряємо зміни...';
+  if (!status.configured) return 'Збереження ще не налаштовано';
+  if (!status.hasPendingChanges) return 'Усі зміни вже на сайті';
+  if (status.changedFiles.length === 1) return '1 зміна очікує оновлення';
+  return `${status.changedFiles.length} змін очікують оновлення`;
 }
 
 export function PublishBar() {
@@ -21,7 +22,7 @@ export function PublishBar() {
       const nextStatus = await getAdminDraftStatus();
       setStatus(nextStatus);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Не вдалося перевірити чернетку');
+      setMessage(error instanceof Error ? error.message : 'Не вдалося перевірити зміни');
     }
   }, []);
 
@@ -29,7 +30,7 @@ export function PublishBar() {
     void refreshStatus();
 
     const handleSaveError = (event: Event) => {
-      const detail = event instanceof CustomEvent && typeof event.detail === 'string' ? event.detail : 'Не вдалося зберегти чернетку';
+      const detail = event instanceof CustomEvent && typeof event.detail === 'string' ? event.detail : 'Не вдалося зберегти зміни';
       setMessage(detail);
     };
 
@@ -48,26 +49,26 @@ export function PublishBar() {
     try {
       const nextStatus = await publishAdminDraft();
       setStatus(nextStatus);
-      setMessage('Опубліковано. Vercel почав новий деплой.');
+      setMessage('Готово. Сайт оновлюється.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Не вдалося опублікувати');
+      setMessage(error instanceof Error ? error.message : 'Не вдалося оновити сайт');
     } finally {
       setIsBusy(false);
     }
   };
 
   const handleDiscard = async () => {
-    if (!window.confirm('Скинути всі неопубліковані зміни чернетки?')) return;
+    if (!window.confirm('Скасувати зміни, які ще не потрапили на сайт?')) return;
 
     setIsBusy(true);
     setMessage('');
     try {
       const nextStatus = await discardAdminDraft();
       setStatus(nextStatus);
-      setMessage('Чернетку скинуто.');
+      setMessage('Зміни скасовано.');
       window.dispatchEvent(new Event('sunergy-admin-state-change'));
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Не вдалося скинути чернетку');
+      setMessage(error instanceof Error ? error.message : 'Не вдалося скасувати зміни');
     } finally {
       setIsBusy(false);
     }
@@ -81,7 +82,7 @@ export function PublishBar() {
       {message ? <span className="text-xs font-medium text-accent">{message}</span> : null}
       <button type="button" onClick={handlePublish} disabled={!canPublish} className="btn-primary h-9 px-3 text-xs disabled:cursor-not-allowed disabled:opacity-60">
         <CloudUpload className="h-3.5 w-3.5" />
-        <span className="ml-1.5">Опублікувати</span>
+        <span className="ml-1.5">Оновити сайт</span>
       </button>
       <button
         type="button"
@@ -90,7 +91,7 @@ export function PublishBar() {
         className="btn-secondary h-9 px-3 text-xs disabled:cursor-not-allowed disabled:opacity-60"
       >
         <RotateCcw className="h-3.5 w-3.5" />
-        <span className="ml-1.5">Скинути</span>
+        <span className="ml-1.5">Скасувати</span>
       </button>
     </div>
   );

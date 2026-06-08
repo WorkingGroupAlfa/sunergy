@@ -91,7 +91,7 @@ function clearLocalAdminState() {
   try {
     Object.values(adminStateStorageKeys).forEach((key) => localStorage.removeItem(key));
   } catch (error) {
-    console.warn('Unable to clear legacy admin state from localStorage:', error);
+    console.warn('Не вдалося очистити старі дані адмінки з браузера:', error);
   }
 }
 

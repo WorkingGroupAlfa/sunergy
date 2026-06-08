@@ -48,7 +48,7 @@ async function mutateDraftState(mutator: (currentState: AdminState) => { state: 
     }
   }
 
-  throw new Error('Unable to save draft after retrying GitHub conflicts.');
+  throw new Error('Не вдалося зберегти зміни. Спробуйте ще раз.');
 }
 
 export async function readAdminState(options: { draft?: boolean } = {}) {

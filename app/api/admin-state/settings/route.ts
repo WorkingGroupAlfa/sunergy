@@ -10,7 +10,7 @@ const noStoreHeaders = {
 
 export async function PUT(request: Request) {
   if (!(await isAuthorizedRequest(request))) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: noStoreHeaders });
+    return NextResponse.json({ error: 'Потрібно увійти знову' }, { status: 401, headers: noStoreHeaders });
   }
 
   try {
@@ -19,6 +19,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ ok: true }, { headers: noStoreHeaders });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Unable to save settings' }, { status: 500, headers: noStoreHeaders });
+    return NextResponse.json({ error: 'Не вдалося зберегти налаштування' }, { status: 500, headers: noStoreHeaders });
   }
 }
