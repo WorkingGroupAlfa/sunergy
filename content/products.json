@@ -1,26 +1,5 @@
 [
   {
-    "slug": "deye-3u-lpcable-deye",
-    "title": "3U-LPCable Deye",
-    "category": "Комплектуючі",
-    "brand": "Deye",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/3u-lpcable-deye-new.png",
-    "shortDescription": "Deye 3U-LPCable: комплектуючий елемент для сонячної енергосистеми.",
-    "description": "Комплектуюча позиція 3U-LPCable бренду Deye з прайсу 27.04. 3U-LPCable Deye Ключові характеристики: Сумісність із системами СЕС. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "Сумісність із системами СЕС"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Deye",
-      "Комплектуючі"
-    ]
-  },
-  {
     "slug": "deye-bos-a-pdu-2-deye-high-voltage-control-box",
     "title": "BOS-A-PDU-2 Deye High Voltage control box",
     "category": "Комплектуючі",
@@ -3092,6 +3071,28 @@
       "Deye",
       "Комплектуючі"
     ]
+  },
+  {
+    "slug": "deye-3u-lpcable-deye",
+    "title": "3U-LPCable Deye",
+    "category": "Комплектуючі",
+    "brand": "Deye",
+    "availability": "preorder",
+    "price": 12372,
+    "rating": 4.8,
+    "reviews": 0,
+    "image": "/images/3u-lpcable-deye-new.png",
+    "shortDescription": "Deye 3U-LPCable: комплектуючий елемент для сонячної енергосистеми.",
+    "description": "Комплектуюча позиція 3U-LPCable бренду Deye з прайсу 27.04. 3U-LPCable Deye Ключові характеристики: Сумісність із системами СЕС. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
+    "specs": [
+      "Сумісність із системами СЕС"
+    ],
+    "badges": [
+      "Є в наявності",
+      "Deye",
+      "Комплектуючі"
+    ],
+    "oldPrice": 12312312
   },
   {
     "slug": "deye-ai-w5-1-pdu1-base-box-base-deye",
