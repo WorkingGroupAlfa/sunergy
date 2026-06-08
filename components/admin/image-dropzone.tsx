@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import { ChangeEvent, DragEvent, useRef, useState } from 'react';
 import { ImageIcon, UploadCloud, X } from 'lucide-react';
+import { uploadAdminAsset } from '@/lib/admin-client';
+import { optimizeImageForUpload } from '@/lib/image-optimizer';
 
 type ImageDropzoneProps = {
   label: string;
@@ -19,10 +21,11 @@ function isDataImage(value: string) {
 export function ImageDropzone({ label, value, fallback, onChange, inputId }: ImageDropzoneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
   const imageSrc = value.trim() || fallback;
 
-  const readFile = (file: File | undefined) => {
+  const uploadFile = async (file: File | undefined) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -30,31 +33,31 @@ export function ImageDropzone({ label, value, fallback, onChange, inputId }: Ima
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = String(reader.result ?? '');
-      if (!isDataImage(result)) {
-        setError('Не вдалося прочитати зображення.');
-        return;
-      }
-
+    setIsUploading(true);
+    try {
+      const optimizedFile = await optimizeImageForUpload(file);
+      const url = await uploadAdminAsset(optimizedFile);
       setError('');
-      onChange(result);
-    };
-    reader.onerror = () => setError('Не вдалося прочитати файл.');
-    reader.readAsDataURL(file);
+      onChange(url);
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : 'Не вдалося завантажити файл.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    readFile(event.target.files?.[0]);
+    void uploadFile(event.target.files?.[0]);
     event.target.value = '';
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
-    readFile(event.dataTransfer.files?.[0]);
+    void uploadFile(event.dataTransfer.files?.[0]);
   };
+
+  const isLegacyDataImage = isDataImage(value);
 
   return (
     <div className="md:col-span-2 xl:col-span-3">
@@ -62,7 +65,7 @@ export function ImageDropzone({ label, value, fallback, onChange, inputId }: Ima
         <label className="text-xs font-semibold text-ink" htmlFor={inputId}>
           {label}
         </label>
-        {isDataImage(value) ? (
+        {isLegacyDataImage ? (
           <button type="button" onClick={() => onChange('')} className="inline-flex items-center gap-1 text-xs font-semibold text-steel hover:text-red-600">
             <X className="h-3.5 w-3.5" />
             Очистити файл
@@ -73,10 +76,10 @@ export function ImageDropzone({ label, value, fallback, onChange, inputId }: Ima
       <input
         id={inputId}
         className="input h-11"
-        value={isDataImage(value) ? 'Локальне зображення збережено в адмінці' : value}
+        value={isLegacyDataImage ? 'Локальне base64-зображення. Завантажте файл ще раз, щоб отримати URL.' : value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={fallback}
-        readOnly={isDataImage(value)}
+        readOnly={isLegacyDataImage}
       />
 
       <div
@@ -96,15 +99,17 @@ export function ImageDropzone({ label, value, fallback, onChange, inputId }: Ima
 
         <div className="flex min-w-0 flex-col justify-center">
           <div className="flex items-center gap-2 text-sm font-semibold text-ink">
-            {isDataImage(value) ? <ImageIcon className="h-4 w-4 text-accent" /> : <UploadCloud className="h-4 w-4 text-accent" />}
-            Перетягніть зображення сюди
+            {isLegacyDataImage ? <ImageIcon className="h-4 w-4 text-accent" /> : <UploadCloud className="h-4 w-4 text-accent" />}
+            {isUploading ? 'Завантаження...' : 'Перетягніть зображення сюди'}
           </div>
-          <p className="mt-1 text-xs leading-5 text-steel">Або виберіть файл з пристрою. Він збережеться в адмінці разом із записом.</p>
+          <p className="mt-1 text-xs leading-5 text-steel">
+            Або виберіть файл з пристрою. У записі буде збережено коротке посилання на зображення.
+          </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="btn-secondary h-10 px-4">
+            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="btn-secondary h-10 px-4 disabled:cursor-not-allowed disabled:opacity-60">
               <UploadCloud className="h-4 w-4" />
-              <span className="ml-2">Обрати файл</span>
+              <span className="ml-2">{isUploading ? 'Завантажуємо' : 'Обрати файл'}</span>
             </button>
           </div>
           {error ? <p className="mt-2 text-xs font-medium text-red-600">{error}</p> : null}

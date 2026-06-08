@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DEFAULT_ADMIN_PASSWORD } from '@/lib/admin-auth';
+import { isAuthorizedRequest } from '@/lib/admin-auth-server';
 import { readAdminState, writeAdminState } from '@/lib/admin-state-server';
 import { type AdminState } from '@/lib/admin-state';
 
@@ -13,18 +13,13 @@ const noStoreHeaders = {
   Expires: '0',
 };
 
-function isAuthorized(request: Request) {
-  const expectedPassword = process.env.SUNERGY_ADMIN_PASSWORD || process.env.NEXT_PUBLIC_SUNERGY_ADMIN_PASSWORD || DEFAULT_ADMIN_PASSWORD;
-  return request.headers.get('x-admin-password') === expectedPassword;
-}
-
-export async function GET() {
-  const state = await readAdminState();
+export async function GET(request: Request) {
+  const state = await readAdminState({ draft: isAuthorizedRequest(request) });
   return NextResponse.json(state, { headers: noStoreHeaders });
 }
 
 export async function PUT(request: Request) {
-  if (!isAuthorized(request)) {
+  if (!isAuthorizedRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: noStoreHeaders });
   }
 

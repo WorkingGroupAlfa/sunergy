@@ -1,7 +1,22 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
+import {
+  deleteRemoteCase,
+  deleteRemoteCategory,
+  deleteRemoteProduct,
+  resetRemoteAboutContent,
+  resetRemoteCases,
+  resetRemoteCategories,
+  resetRemoteHomeContent,
+  resetRemoteProducts,
+  saveRemoteAboutContent,
+  saveRemoteCase,
+  saveRemoteCategory,
+  saveRemoteHomeContent,
+  saveRemoteProduct,
+  saveRemoteShowCalculator,
+} from '@/lib/admin-client';
 import {
   adminStateStorageKeys,
   defaultAdminState,
@@ -9,6 +24,9 @@ import {
   hydrateHomeContent,
   normalizeAdminState,
   normalizeProductImages,
+  sanitizeAboutContentForPersistence,
+  sanitizeCaseForPersistence,
+  sanitizeProductForPersistence,
   sortProductsByAvailability,
   withAdminStateTimestamp,
   type AdminState,
@@ -58,12 +76,6 @@ const CART_KEY = 'sunergy_cart';
 
 const ShopContext = createContext<ShopContextValue | null>(null);
 
-function getUpdatedAtTime(value: string | undefined) {
-  if (!value) return 0;
-  const time = Date.parse(value);
-  return Number.isFinite(time) ? time : 0;
-}
-
 function readJson<T>(key: string): T | undefined {
   const raw = localStorage.getItem(key);
   if (!raw) return undefined;
@@ -75,47 +87,11 @@ function readJson<T>(key: string): T | undefined {
   }
 }
 
-function readLocalAdminSnapshot() {
-  const products = readJson<Product[]>(adminStateStorageKeys.products);
-  const categories = readJson<ProductCategory[]>(adminStateStorageKeys.categories);
-  const cases = readJson<CaseItem[]>(adminStateStorageKeys.cases);
-  const homeContent = readJson<Partial<HomeContent>>(adminStateStorageKeys.homeContent);
-  const aboutContent = readJson<Partial<AboutContent>>(adminStateStorageKeys.aboutContent);
-  const rawShowCalculator = localStorage.getItem(adminStateStorageKeys.showCalculator);
-  const rawMeta = localStorage.getItem(adminStateStorageKeys.meta);
-  const meta = readJson<{ updatedAt?: string; catalogSignature?: string }>(adminStateStorageKeys.meta);
-  const hasAdminData = Boolean(products || categories || cases || homeContent || aboutContent || rawShowCalculator !== null);
-
-  if (!hasAdminData && !rawMeta) return null;
-
-  const state = normalizeAdminState({
-    ...(products ? { products } : {}),
-    ...(categories ? { categories } : {}),
-    ...(cases ? { cases } : {}),
-    ...(homeContent ? { homeContent } : {}),
-    ...(aboutContent ? { aboutContent } : {}),
-    ...(rawShowCalculator !== null ? { showCalculator: rawShowCalculator === 'true' } : {}),
-    ...(meta?.updatedAt ? { updatedAt: meta.updatedAt } : {}),
-    ...(meta?.catalogSignature ? { catalogSignature: meta.catalogSignature } : {}),
-  });
-
-  return {
-    state,
-    hasLegacyData: hasAdminData && !rawMeta,
-  };
-}
-
-function writeLocalAdminState(state: AdminState) {
+function clearLocalAdminState() {
   try {
-    localStorage.setItem(adminStateStorageKeys.products, JSON.stringify(state.products));
-    localStorage.setItem(adminStateStorageKeys.categories, JSON.stringify(state.categories));
-    localStorage.setItem(adminStateStorageKeys.cases, JSON.stringify(state.cases));
-    localStorage.setItem(adminStateStorageKeys.homeContent, JSON.stringify(state.homeContent));
-    localStorage.setItem(adminStateStorageKeys.aboutContent, JSON.stringify(state.aboutContent));
-    localStorage.setItem(adminStateStorageKeys.showCalculator, JSON.stringify(state.showCalculator));
-    localStorage.setItem(adminStateStorageKeys.meta, JSON.stringify({ updatedAt: state.updatedAt ?? null, catalogSignature: state.catalogSignature ?? null }));
+    Object.values(adminStateStorageKeys).forEach((key) => localStorage.removeItem(key));
   } catch (error) {
-    console.warn('Unable to save admin state to localStorage:', error);
+    console.warn('Unable to clear legacy admin state from localStorage:', error);
   }
 }
 
@@ -146,24 +122,11 @@ async function fetchRemoteAdminState() {
   return normalizeAdminState((await response.json()) as Partial<AdminState>);
 }
 
-async function saveRemoteAdminState(state: AdminState) {
-  const password = sessionStorage.getItem(ADMIN_PASSWORD_KEY) || ADMIN_PASSWORD;
-  const response = await fetch('/api/admin-state', {
-    method: 'PUT',
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache',
-      'x-admin-password': password,
-    },
-    body: JSON.stringify(state),
-  });
+function notifyAdminSaveError(error: unknown) {
+  if (typeof window === 'undefined') return;
 
-  if (!response.ok) {
-    throw new Error(`Admin state save failed: ${response.status}`);
-  }
-
-  return normalizeAdminState((await response.json()) as Partial<AdminState>);
+  const message = error instanceof Error ? error.message : 'Admin save failed.';
+  window.dispatchEvent(new CustomEvent('sunergy-admin-state-error', { detail: message }));
 }
 
 export function ShopProvider({ children }: { children: React.ReactNode }) {
@@ -178,7 +141,6 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
   const [storageReady, setStorageReady] = useState(false);
   const adminStateRef = useRef<AdminState>(defaultAdminState);
   const remoteSaveQueueRef = useRef<Promise<void>>(Promise.resolve());
-  const saveRevisionRef = useRef(0);
 
   const applyAdminState = useCallback((state: Partial<AdminState>) => {
     const normalized = normalizeAdminState(state);
@@ -201,28 +163,20 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const persistAdminState = useCallback((state: Partial<AdminState>) => {
-    const localState = withAdminStateTimestamp({
-      ...adminStateRef.current,
-      ...state,
-    });
-    const revision = saveRevisionRef.current + 1;
-    saveRevisionRef.current = revision;
+  const commitAdminChange = useCallback((state: AdminState, remoteWrite: () => Promise<unknown>) => {
+    const localState = withAdminStateTimestamp(state);
     adminStateRef.current = localState;
-    writeLocalAdminState(localState);
+    applyAdminState(localState);
+    clearLocalAdminState();
 
     remoteSaveQueueRef.current = remoteSaveQueueRef.current
       .catch(() => undefined)
       .then(async () => {
-        const remoteState = await saveRemoteAdminState(localState);
-        if (revision !== saveRevisionRef.current) return;
-
-        adminStateRef.current = remoteState;
-        writeLocalAdminState(remoteState);
-        applyAdminState(remoteState);
+        await remoteWrite();
       })
       .catch((error) => {
         console.error(error);
+        notifyAdminSaveError(error);
       });
   }, [applyAdminState]);
 
@@ -230,9 +184,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     async function loadState() {
-      const localSnapshot = readLocalAdminSnapshot();
-      const provisionalState = localSnapshot?.state ?? defaultAdminState;
-      const provisional = applyAdminState(provisionalState);
+      clearLocalAdminState();
+
+      const provisional = applyAdminState(defaultAdminState);
       const provisionalPersonalState = readPersonalState(provisional.products);
 
       setFavorites(provisionalPersonalState.favorites);
@@ -242,21 +196,12 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         const remoteState = await fetchRemoteAdminState();
         if (cancelled) return;
 
-        const latestLocalState = adminStateRef.current;
-        const latestLocalTime = getUpdatedAtTime(latestLocalState.updatedAt);
-        const remoteTime = getUpdatedAtTime(remoteState.updatedAt);
-        const shouldPromoteLocal = latestLocalTime > remoteTime || Boolean(localSnapshot?.hasLegacyData && remoteTime === 0);
-        const chosenState = shouldPromoteLocal ? withAdminStateTimestamp(latestLocalState) : remoteState;
-        const normalized = applyAdminState(chosenState);
+        const normalized = applyAdminState(remoteState);
         const personalState = readPersonalState(normalized.products);
 
         setFavorites(personalState.favorites);
         setCart(personalState.cart);
-        writeLocalAdminState(normalized);
-
-        if (shouldPromoteLocal) {
-          persistAdminState(normalized);
-        }
+        clearLocalAdminState();
       } catch (error) {
         console.error(error);
       } finally {
@@ -271,7 +216,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [applyAdminState, persistAdminState]);
+  }, [applyAdminState]);
 
   useEffect(() => {
     if (!storageReady) return;
@@ -301,7 +246,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
       cartCount,
       saveProduct: (product, previousSlug) => {
         const currentState = adminStateRef.current;
-        const normalizedProduct = normalizeProductImages(product);
+        const normalizedProduct = sanitizeProductForPersistence(normalizeProductImages(product));
         const sourceProducts =
           previousSlug && previousSlug !== normalizedProduct.slug
             ? currentState.products.filter((item) => item.slug !== previousSlug)
@@ -311,26 +256,23 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
           exists ? sourceProducts.map((item) => (item.slug === normalizedProduct.slug ? normalizedProduct : item)) : [normalizedProduct, ...sourceProducts]
         );
 
-        setProducts(nextProducts);
-        persistAdminState(buildAdminState({ products: nextProducts }));
+        commitAdminChange(buildAdminState({ products: nextProducts }), () => saveRemoteProduct(normalizedProduct, previousSlug));
       },
       deleteProduct: (slug) => {
         const nextProducts = adminStateRef.current.products.filter((item) => item.slug !== slug);
 
-        setProducts(nextProducts);
         setFavorites((prev) => prev.filter((item) => item !== slug));
         setCart((prev) => {
           const next = { ...prev };
           delete next[slug];
           return next;
         });
-        persistAdminState(buildAdminState({ products: nextProducts }));
+        commitAdminChange(buildAdminState({ products: nextProducts }), () => deleteRemoteProduct(slug));
       },
       resetProducts: () => {
         const nextProducts = defaultAdminState.products;
 
-        setProducts(nextProducts);
-        persistAdminState(buildAdminState({ products: nextProducts }));
+        commitAdminChange(buildAdminState({ products: nextProducts }), resetRemoteProducts);
       },
       saveCategory: (category, previousCategory) => {
         const currentState = adminStateRef.current;
@@ -344,73 +286,62 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
             ? sortProductsByAvailability(currentState.products.map((product) => (product.category === previousCategory ? { ...product, category: nextCategory } : product)))
             : currentState.products;
 
-        setCategories(nextCategories);
-        setProducts(nextProducts);
-        persistAdminState(buildAdminState({ categories: nextCategories, products: nextProducts }));
+        commitAdminChange(buildAdminState({ categories: nextCategories, products: nextProducts }), () => saveRemoteCategory(nextCategory, previousCategory));
       },
       deleteCategory: (category) => {
         const currentState = adminStateRef.current;
         if (currentState.products.some((product) => product.category === category)) return false;
 
         const nextCategories = currentState.categories.filter((item) => item !== category);
-        setCategories(nextCategories);
-        persistAdminState(buildAdminState({ categories: nextCategories }));
+        commitAdminChange(buildAdminState({ categories: nextCategories }), () => deleteRemoteCategory(category));
         return true;
       },
       resetCategories: () => {
         const nextCategories = defaultAdminState.categories;
 
-        setCategories(nextCategories);
-        persistAdminState(buildAdminState({ categories: nextCategories }));
+        commitAdminChange(buildAdminState({ categories: nextCategories }), resetRemoteCategories);
       },
       saveCase: (item, previousSlug) => {
+        const sanitized = sanitizeCaseForPersistence(item);
         const currentCases = adminStateRef.current.cases;
         const withoutPrevious = previousSlug ? currentCases.filter((caseItem) => caseItem.slug !== previousSlug) : currentCases;
-        const exists = withoutPrevious.some((caseItem) => caseItem.slug === item.slug);
-        const nextCases = exists ? withoutPrevious.map((caseItem) => (caseItem.slug === item.slug ? item : caseItem)) : [item, ...withoutPrevious];
+        const exists = withoutPrevious.some((caseItem) => caseItem.slug === sanitized.slug);
+        const nextCases = exists ? withoutPrevious.map((caseItem) => (caseItem.slug === sanitized.slug ? sanitized : caseItem)) : [sanitized, ...withoutPrevious];
 
-        setCases(nextCases);
-        persistAdminState(buildAdminState({ cases: nextCases }));
+        commitAdminChange(buildAdminState({ cases: nextCases }), () => saveRemoteCase(sanitized, previousSlug));
       },
       deleteCase: (slug) => {
         const nextCases = adminStateRef.current.cases.filter((item) => item.slug !== slug);
 
-        setCases(nextCases);
-        persistAdminState(buildAdminState({ cases: nextCases }));
+        commitAdminChange(buildAdminState({ cases: nextCases }), () => deleteRemoteCase(slug));
       },
       resetCases: () => {
         const nextCases = defaultAdminState.cases;
 
-        setCases(nextCases);
-        persistAdminState(buildAdminState({ cases: nextCases }));
+        commitAdminChange(buildAdminState({ cases: nextCases }), resetRemoteCases);
       },
       saveHomeContent: (content) => {
         const nextHomeContent = hydrateHomeContent(content);
 
-        setHomeContent(nextHomeContent);
-        persistAdminState(buildAdminState({ homeContent: nextHomeContent }));
+        commitAdminChange(buildAdminState({ homeContent: nextHomeContent }), () => saveRemoteHomeContent(nextHomeContent));
       },
       resetHomeContent: () => {
         const nextHomeContent = defaultAdminState.homeContent;
 
-        setHomeContent(nextHomeContent);
-        persistAdminState(buildAdminState({ homeContent: nextHomeContent }));
+        commitAdminChange(buildAdminState({ homeContent: nextHomeContent }), resetRemoteHomeContent);
       },
       saveAboutContent: (content) => {
-        const nextAboutContent = hydrateAboutContent(content);
+        const nextAboutContent = sanitizeAboutContentForPersistence(hydrateAboutContent(content));
 
-        setAboutContent(nextAboutContent);
-        persistAdminState(buildAdminState({ aboutContent: nextAboutContent }));
+        commitAdminChange(buildAdminState({ aboutContent: nextAboutContent }), () => saveRemoteAboutContent(nextAboutContent));
       },
       resetAboutContent: () => {
         const nextAboutContent = defaultAdminState.aboutContent;
 
-        setAboutContent(nextAboutContent);
-        persistAdminState(buildAdminState({ aboutContent: nextAboutContent }));
+        commitAdminChange(buildAdminState({ aboutContent: nextAboutContent }), resetRemoteAboutContent);
       },
       setShowCalculator: (nextValue) => {
-        setShowCalculatorState(nextValue);
-        persistAdminState(buildAdminState({ showCalculator: nextValue }));
+        commitAdminChange(buildAdminState({ showCalculator: nextValue }), () => saveRemoteShowCalculator(nextValue));
       },
       isFavorite: (slug) => favorites.includes(slug),
       toggleFavorite: (slug) => {
@@ -445,9 +376,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     cart,
     cases,
     categories,
+    commitAdminChange,
     favorites,
     homeContent,
-    persistAdminState,
     products,
     showCalculator,
     storageReady,

@@ -7,7 +7,9 @@ import { ArrowLeft, Eye, LockKeyhole, RotateCcw, Save } from 'lucide-react';
 import { defaultAboutContent, type AboutContent } from '@/data/about-content';
 import { useShop } from '@/components/shop/shop-provider';
 import { ImageDropzone } from '@/components/admin/image-dropzone';
-import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
+import { PublishBar } from '@/components/admin/publish-bar';
+import { ADMIN_AUTH_KEY } from '@/lib/admin-auth';
+import { checkAdminSession, loginAdmin } from '@/lib/admin-client';
 
 function socialsToText(items: AboutContent['socials']) {
   return items.map((item) => `${item.label}|${item.href}`).join('\n');
@@ -56,7 +58,27 @@ export default function AdminAboutPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    setIsAuthenticated(sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true');
+    let cancelled = false;
+
+    const cachedSession = sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+    if (cachedSession) setIsAuthenticated(true);
+
+    async function loadSession() {
+      const authenticated = await checkAdminSession();
+      if (cancelled) return;
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      } else {
+        sessionStorage.removeItem(ADMIN_AUTH_KEY);
+      }
+    }
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -71,19 +93,19 @@ export default function AdminAboutPage() {
     setMessage('');
   };
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (password === ADMIN_PASSWORD) {
+    try {
+      await loginAdmin(password);
       sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
-      sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
       setIsAuthenticated(true);
       setLoginError('');
       setPassword('');
       return;
+    } catch {
+      setLoginError('Невірний пароль');
     }
-
-    setLoginError('Невірний пароль');
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -154,6 +176,7 @@ export default function AdminAboutPage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <PublishBar />
             {message ? <span className="rounded-full bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">{message}</span> : null}
             <button type="button" onClick={handleReset} className="btn-secondary">
               <RotateCcw className="h-4 w-4" />

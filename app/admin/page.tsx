@@ -8,7 +8,10 @@ import { type Product, type ProductAvailability, type ProductCategory } from '@/
 import { compareStableText, formatPrice } from '@/lib/utils';
 import { useShop } from '@/components/shop/shop-provider';
 import { ImageDropzone } from '@/components/admin/image-dropzone';
-import { ADMIN_AUTH_KEY, ADMIN_PASSWORD, ADMIN_PASSWORD_KEY } from '@/lib/admin-auth';
+import { PublishBar } from '@/components/admin/publish-bar';
+import { ADMIN_AUTH_KEY } from '@/lib/admin-auth';
+import { checkAdminSession, loginAdmin, uploadAdminAsset } from '@/lib/admin-client';
+import { optimizeImageForUpload } from '@/lib/image-optimizer';
 
 type ProductFormState = {
   slug: string;
@@ -133,7 +136,27 @@ export default function AdminPage() {
   );
 
   useEffect(() => {
-    setIsAuthenticated(sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true');
+    let cancelled = false;
+
+    const cachedSession = sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+    if (cachedSession) setIsAuthenticated(true);
+
+    async function loadSession() {
+      const authenticated = await checkAdminSession();
+      if (cancelled) return;
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      } else {
+        sessionStorage.removeItem(ADMIN_AUTH_KEY);
+      }
+    }
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filteredProducts = useMemo(() => {
@@ -160,29 +183,25 @@ export default function AdminPage() {
   const addGalleryImages = async (files: FileList | null) => {
     if (!files?.length) return;
 
-    const readers = Array.from(files)
-      .filter((file) => file.type.startsWith('image/'))
-      .map(
-        (file) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result ?? ''));
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(file);
-          })
-      );
+    const imageFiles = Array.from(files).filter((file) => file.type.startsWith('image/'));
 
-    if (readers.length === 0) {
+    if (imageFiles.length === 0) {
       setMessage('Оберіть файли зображень');
       return;
     }
 
-    const uploadedImages = (await Promise.all(readers)).filter((value) => value.startsWith('data:image/'));
-    setForm((prev) => ({
-      ...prev,
-      images: listToText(Array.from(new Set([...textToList(prev.images), ...uploadedImages]))),
-    }));
-    setMessage(`Додано фото: ${uploadedImages.length}`);
+    try {
+      const uploadedImages = await Promise.all(
+        imageFiles.map(async (file) => uploadAdminAsset(await optimizeImageForUpload(file)))
+      );
+      setForm((prev) => ({
+        ...prev,
+        images: listToText(Array.from(new Set([...textToList(prev.images), ...uploadedImages]))),
+      }));
+      setMessage(`Додано фото: ${uploadedImages.length}`);
+    } catch (uploadError) {
+      setMessage(uploadError instanceof Error ? uploadError.message : 'Не вдалося завантажити фото');
+    }
   };
 
   const startCreate = () => {
@@ -281,19 +300,19 @@ export default function AdminPage() {
     setMessage('Категорії скинуто');
   };
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (password === ADMIN_PASSWORD) {
+    try {
+      await loginAdmin(password);
       sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
-      sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
       setIsAuthenticated(true);
       setLoginError('');
       setPassword('');
       return;
+    } catch {
+      setLoginError('Невірний пароль');
     }
-
-    setLoginError('Невірний пароль');
   };
 
   const selectedAvailability = availabilityMap[form.availability];
@@ -360,6 +379,7 @@ export default function AdminPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <PublishBar />
             {message ? <span className="rounded-full bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">{message}</span> : null}
             <button type="button" onClick={startCreate} className="btn-primary">
               <Plus className="h-4 w-4" />
@@ -647,7 +667,7 @@ export default function AdminPage() {
                       className="input min-h-24 resize-y"
                       value={form.images}
                       onChange={(event) => updateForm('images', event.target.value)}
-                      placeholder="Одне посилання або data:image у кожному рядку"
+                      placeholder="Одне посилання у кожному рядку"
                     />
                     <input
                       ref={galleryInputRef}

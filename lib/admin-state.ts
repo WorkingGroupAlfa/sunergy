@@ -36,6 +36,60 @@ export const adminStateStorageKeys = {
   meta: 'sunergy_admin_state_meta_2026_05_27',
 } as const;
 
+export function isDataImage(value: string | undefined) {
+  return Boolean(value?.startsWith('data:image/'));
+}
+
+export function sanitizePersistedImage(value: string | undefined, fallback: string) {
+  const image = value?.trim();
+  if (!image || isDataImage(image)) return fallback;
+
+  return image;
+}
+
+export function sanitizeProductForPersistence(product: Product): Product {
+  const fallback = '/illustrations/product-battery.svg';
+  const image = sanitizePersistedImage(product.image, fallback);
+  const images = Array.isArray(product.images)
+    ? product.images
+        .map((item) => item.trim())
+        .filter((item) => item && !isDataImage(item))
+    : [];
+  const gallery = Array.from(new Set([image, ...images]));
+
+  return normalizeProductImages(
+    {
+      ...product,
+      image,
+      images: gallery.length > 1 ? gallery : undefined,
+    },
+    fallback
+  );
+}
+
+export function sanitizeCaseForPersistence(item: CaseItem): CaseItem {
+  return {
+    ...item,
+    image: sanitizePersistedImage(item.image, '/illustrations/case-home.svg'),
+  };
+}
+
+export function sanitizeAboutContentForPersistence(content: AboutContent): AboutContent {
+  return {
+    ...content,
+    image: sanitizePersistedImage(content.image, defaultAboutContent.image),
+  };
+}
+
+export function sanitizeAdminStateForPersistence(state: AdminState): AdminState {
+  return normalizeAdminState({
+    ...state,
+    products: state.products.map(sanitizeProductForPersistence),
+    cases: state.cases.map(sanitizeCaseForPersistence),
+    aboutContent: sanitizeAboutContentForPersistence(state.aboutContent),
+  });
+}
+
 const availabilitySortOrder: Record<NonNullable<Product['availability']>, number> = {
   available: 0,
   preorder: 1,

@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "home-10kwt-kyiv-region",
+    "title": "Приватний будинок 10 кВт + батарея 10 кВт*год",
+    "segment": "Будинок",
+    "location": "Київська область",
+    "result": "Зниження рахунку за електроенергію на 47% та стабільний резерв ключових ліній.",
+    "system": "24 панелі + гібридний інвертор + LiFePO4",
+    "image": "/illustrations/case-home.svg"
+  },
+  {
+    "slug": "store-20kwt-dnipro",
+    "title": "Магазин 20 кВт для денної генерації",
+    "segment": "Комерція",
+    "location": "Дніпро",
+    "result": "Стабілізація витрат і підтримка касової зони під час відключень.",
+    "system": "Комерційна станція 20 кВт",
+    "image": "/illustrations/case-commercial.svg"
+  },
+  {
+    "slug": "apartment-backup-lviv",
+    "title": "Квартира: резерв 3.5 кВт",
+    "segment": "Квартира",
+    "location": "Львів",
+    "result": "Автономність інтернету, освітлення та базової техніки до 8 годин.",
+    "system": "Інвертор + акумуляторний модуль",
+    "image": "/illustrations/case-apartment.svg"
+  },
+  {
+    "slug": "workshop-30kwt-odesa",
+    "title": "Виробництво 30 кВт із поетапним розширенням",
+    "segment": "Бізнес",
+    "location": "Одеса",
+    "result": "Скорочення денного піку та гнучкий сценарій масштабування за навантаженням.",
+    "system": "Трифазна гібридна система 30 кВт",
+    "image": "/illustrations/case-business.svg"
+  }
+]

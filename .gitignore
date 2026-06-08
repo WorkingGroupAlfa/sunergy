@@ -10,4 +10,7 @@ coverage/
 Thumbs.db
 *.tsbuildinfo
 .vercel
+.open-next/
+.wrangler/
+.dev.vars
 data/admin-state.json
