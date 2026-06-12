@@ -1849,6 +1849,32 @@
     ]
   },
   {
+    "slug": "deye-sun-10k-sg02lp1-eu-am3-deye-wifi-10-kw-1-фаза-3-mppt-lv",
+    "title": "Гібридний інвертор SUN-10K-SG02LP1-EU-AM3 Deye WiFi (10 kW, 1 фаза, 3 MPPT, LV)",
+    "category": "Інвертори гібридні",
+    "brand": "Deye",
+    "availability": "available",
+    "price": 78750,
+    "rating": 5,
+    "reviews": 24,
+    "image": "/images/sun-10k-sg02lp1-eu-am3.png",
+    "shortDescription": "Deye SUN-10K-SG02LP1-EU-AM3 WiFi (10 kW, 1 фаза, 3 MPPT, LV): інвертор для сонячних та резервних енергосистем.",
+    "description": "Модель SUN-10K-SG02LP1-EU-AM3 WiFi (10 kW, 1 фаза, 3 MPPT, LV) бренду Deye з прайсу 27.04, розділ «ІНВЕРТОРИ ГІБРИДНІ». SUN-10K-SG02LP1-EU-AM3 Deye WiFi (10 kW, 1 фаза, 3 MPPT, LV) Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 10 kW, 3 MPPT, LV, WiFi. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
+    "specs": [
+      "10 kW",
+      "3 MPPT",
+      "LV",
+      "WiFi"
+    ],
+    "badges": [
+      "Під замовлення",
+      "Deye",
+      "Гібридний",
+      "LV",
+      "Очікується"
+    ]
+  },
+  {
     "slug": "deye-каб-живл-epcable5-0-deye-5-метрів-позитивний-полюс-зовнішнього-pcs",
     "title": "Каб. живл. EPCable5.0 Deye (5 метрів позитивний полюс зовнішнього PCS)",
     "category": "Комплектуючі",
@@ -3820,32 +3846,6 @@
       "Під замовлення",
       "Deye",
       "Мережевий",
-      "Очікується"
-    ]
-  },
-  {
-    "slug": "deye-sun-10k-sg02lp1-eu-am3-deye-wifi-10-kw-1-фаза-3-mppt-lv",
-    "title": "SUN-10K-SG02LP1-EU-AM3 Deye WiFi (10 kW, 1 фаза, 3 MPPT, LV)",
-    "category": "Інвертори",
-    "brand": "Deye",
-    "availability": "preorder",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/sun-10k-sg02lp1-eu-am3.png",
-    "shortDescription": "Deye SUN-10K-SG02LP1-EU-AM3 WiFi (10 kW, 1 фаза, 3 MPPT, LV): інвертор для сонячних та резервних енергосистем.",
-    "description": "Модель SUN-10K-SG02LP1-EU-AM3 WiFi (10 kW, 1 фаза, 3 MPPT, LV) бренду Deye з прайсу 27.04, розділ «ІНВЕРТОРИ ГІБРИДНІ». SUN-10K-SG02LP1-EU-AM3 Deye WiFi (10 kW, 1 фаза, 3 MPPT, LV) Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 10 kW, 3 MPPT, LV, WiFi. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "10 kW",
-      "3 MPPT",
-      "LV",
-      "WiFi"
-    ],
-    "badges": [
-      "Під замовлення",
-      "Deye",
-      "Гібридний",
-      "LV",
       "Очікується"
     ]
   },
