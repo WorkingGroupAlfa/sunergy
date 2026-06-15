@@ -2073,6 +2073,38 @@
     "badges": []
   },
   {
+    "slug": "deye-sun-15k-sg05lp3-eu-sm2-deye-wifi-15-kw-3-фази-2-mppt-lv",
+    "title": "Гібридний інвертор SUN-15K-SG05LP3-EU-SM2 Deye WiFi (15 kW, 3 фази, 2 MPPT, LV)",
+    "category": "Інвертори гібридні",
+    "brand": "Deye",
+    "availability": "available",
+    "price": 99450,
+    "rating": 5,
+    "reviews": 20,
+    "image": "/images/sun-15k-sg05lp3-eu-sm2.png",
+    "shortDescription": "Deye SUN-15K-SG05LP3-EU-SM2 WiFi (15 kW, 3 фази, 2 MPPT, LV): інвертор для сонячних та резервних енергосистем.",
+    "description": "Модель SUN-15K-SG05LP3-EU-SM2 WiFi (15 kW, 3 фази, 2 MPPT, LV) бренду Deye з прайсу 27.04, розділ «ІНВЕРТОРИ ГІБРИДНІ». SUN-15K-SG05LP3-EU-SM2 Deye WiFi (15 kW, 3 фази, 2 MPPT, LV) Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 15 kW, 2 MPPT, LV, WiFi. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
+    "specs": [
+      "15 kW",
+      "2 MPPT",
+      "LV",
+      "WiFi"
+    ],
+    "badges": [
+      "Під замовлення",
+      "Deye",
+      "Гібридний",
+      "LV",
+      "Очікується"
+    ],
+    "images": [
+      "/images/sun-15k-sg05lp3-eu-sm2.png",
+      "/uploads/admin/20260615090125-zjnsd6-gibrydnyj-invertor-sun-15k-sg05lp3-eu-sm2-deye-wifi-15-kw-3-fazy-2-mppt-lv-03.webp",
+      "/uploads/admin/20260615090132-ulszee-1.webp",
+      "/uploads/admin/20260615090139-w1zqku-gibrydnyj-invertor-sun-15k-sg05lp3-eu-sm2-deye-wifi-15-kw-3-fazy-2-mppt-lv-04.webp"
+    ]
+  },
+  {
     "slug": "deye-каб-живл-epcable5-0-deye-5-метрів-позитивний-полюс-зовнішнього-pcs",
     "title": "Каб. живл. EPCable5.0 Deye (5 метрів позитивний полюс зовнішнього PCS)",
     "category": "Комплектуючі",
@@ -4116,32 +4148,6 @@
       "Під замовлення",
       "Deye",
       "Мережевий",
-      "Очікується"
-    ]
-  },
-  {
-    "slug": "deye-sun-15k-sg05lp3-eu-sm2-deye-wifi-15-kw-3-фази-2-mppt-lv",
-    "title": "SUN-15K-SG05LP3-EU-SM2 Deye WiFi (15 kW, 3 фази, 2 MPPT, LV)",
-    "category": "Інвертори",
-    "brand": "Deye",
-    "availability": "preorder",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/sun-15k-sg05lp3-eu-sm2.png",
-    "shortDescription": "Deye SUN-15K-SG05LP3-EU-SM2 WiFi (15 kW, 3 фази, 2 MPPT, LV): інвертор для сонячних та резервних енергосистем.",
-    "description": "Модель SUN-15K-SG05LP3-EU-SM2 WiFi (15 kW, 3 фази, 2 MPPT, LV) бренду Deye з прайсу 27.04, розділ «ІНВЕРТОРИ ГІБРИДНІ». SUN-15K-SG05LP3-EU-SM2 Deye WiFi (15 kW, 3 фази, 2 MPPT, LV) Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 15 kW, 2 MPPT, LV, WiFi. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "15 kW",
-      "2 MPPT",
-      "LV",
-      "WiFi"
-    ],
-    "badges": [
-      "Під замовлення",
-      "Deye",
-      "Гібридний",
-      "LV",
       "Очікується"
     ]
   },
