@@ -3,6 +3,11 @@ import { isAuthorizedRequest } from '@/lib/admin-auth-server';
 import { resetAboutContentState, saveAboutContentState } from '@/lib/admin-state-server';
 import { type AboutContent } from '@/data/about-content';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const maxDuration = 60;
+
 const noStoreHeaders = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
   Pragma: 'no-cache',

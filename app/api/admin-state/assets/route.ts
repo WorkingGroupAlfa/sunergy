@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { isAuthorizedRequest } from '@/lib/admin-auth-server';
 import { uploadAdminAsset } from '@/lib/admin-assets-server';
+import { toUserFacingGitHubError } from '@/lib/github-cms';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const maxDuration = 60;
 
 const noStoreHeaders = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -16,7 +22,7 @@ const userFriendlyUploadErrors = new Set([
 
 function getUploadErrorMessage(error: unknown) {
   if (error instanceof Error && userFriendlyUploadErrors.has(error.message)) return error.message;
-  return 'Не вдалося завантажити фото';
+  return toUserFacingGitHubError(error, 'Не вдалося завантажити фото');
 }
 
 export async function POST(request: Request) {

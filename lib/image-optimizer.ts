@@ -1,8 +1,8 @@
 'use client';
 
-const MAX_UPLOAD_BYTES = 3.8 * 1024 * 1024;
-const MAX_IMAGE_EDGE = 1800;
-const MIN_IMAGE_EDGE = 900;
+const MAX_UPLOAD_BYTES = 1.2 * 1024 * 1024;
+const MAX_IMAGE_EDGE = 1400;
+const MIN_IMAGE_EDGE = 600;
 
 function outputFileName(fileName: string) {
   const baseName = fileName.replace(/\.[^.]+$/, '').trim() || 'image';

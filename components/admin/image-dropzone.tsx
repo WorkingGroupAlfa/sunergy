@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ChangeEvent, DragEvent, useRef, useState } from 'react';
 import { ImageIcon, UploadCloud, X } from 'lucide-react';
 import { uploadAdminAsset } from '@/lib/admin-client';
+import { isCloudinaryConfigured, uploadToCloudinary } from '@/lib/cloudinary-upload';
 import { optimizeImageForUpload } from '@/lib/image-optimizer';
 
 type ImageDropzoneProps = {
@@ -36,7 +37,9 @@ export function ImageDropzone({ label, value, fallback, onChange, inputId }: Ima
     setIsUploading(true);
     try {
       const optimizedFile = await optimizeImageForUpload(file);
-      const url = await uploadAdminAsset(optimizedFile);
+      const url = isCloudinaryConfigured()
+        ? await uploadToCloudinary(optimizedFile)
+        : await uploadAdminAsset(optimizedFile);
       setError('');
       onChange(url);
     } catch (uploadError) {

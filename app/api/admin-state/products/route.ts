@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { isAuthorizedRequest } from '@/lib/admin-auth-server';
 import { deleteProductState, resetProductsState, saveProductState } from '@/lib/admin-state-server';
+import { toUserFacingGitHubError } from '@/lib/github-cms';
 import { type Product } from '@/data/shop';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const maxDuration = 60;
 
 const noStoreHeaders = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -24,7 +30,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ ok: true }, { headers: noStoreHeaders });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Не вдалося зберегти товар' }, { status: 500, headers: noStoreHeaders });
+    return NextResponse.json({ error: toUserFacingGitHubError(error, 'Не вдалося зберегти товар') }, { status: 500, headers: noStoreHeaders });
   }
 }
 
@@ -43,7 +49,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ ok: true }, { headers: noStoreHeaders });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Не вдалося видалити товар' }, { status: 500, headers: noStoreHeaders });
+    return NextResponse.json({ error: toUserFacingGitHubError(error, 'Не вдалося видалити товар') }, { status: 500, headers: noStoreHeaders });
   }
 }
 
@@ -62,6 +68,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { headers: noStoreHeaders });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Не вдалося скинути товари' }, { status: 500, headers: noStoreHeaders });
+    return NextResponse.json({ error: toUserFacingGitHubError(error, 'Не вдалося скинути товари') }, { status: 500, headers: noStoreHeaders });
   }
 }

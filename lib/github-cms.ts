@@ -74,6 +74,15 @@ export function isGitHubConflictError(error: unknown) {
   return error instanceof GitHubApiError && (error.status === 409 || (error.status === 422 && /reference|fast-forward|sha/i.test(error.body)));
 }
 
+export function toUserFacingGitHubError(error: unknown, fallback: string): string {
+  if (!(error instanceof GitHubApiError)) return fallback;
+  if (error.status === 401) return 'GitHub: токен недійсний або вичерпався. Оновіть GITHUB_TOKEN у Vercel.';
+  if (error.status === 403) return 'GitHub: токен не має прав на запис. Перевірте permissions (contents: write).';
+  if (error.status === 404) return 'GitHub: репозиторій або гілка не знайдені. Перевірте GITHUB_REPO.';
+  if (error.status === 422) return 'GitHub: помилка при збереженні. Спробуйте ще раз.';
+  return fallback;
+}
+
 function getGitHubConfig(): GitHubConfig | null {
   const token = process.env.GITHUB_TOKEN;
   const repository = process.env.GITHUB_REPO;
@@ -213,13 +222,10 @@ async function readStateFromBranch(config: GitHubConfig, branch: string) {
   });
 }
 
-async function commitFilesToBranch(config: GitHubConfig, branch: string, files: FileUpdate[], message: string) {
+async function commitFilesToBranchWithHead(config: GitHubConfig, branch: string, headSha: string, files: FileUpdate[], message: string) {
   if (files.length === 0) return;
 
-  const head = branch === config.draftBranch ? await ensureDraftBranch(config) : await getBranchHead(config, branch);
-  if (!head) throw new Error(`Branch ${branch} was not found.`);
-
-  const headCommit = await getCommit(config, head);
+  const headCommit = await getCommit(config, headSha);
   const tree = await githubFetch<{ sha: string }>(config, '/git/trees', {
     method: 'POST',
     body: JSON.stringify({
@@ -237,26 +243,36 @@ async function commitFilesToBranch(config: GitHubConfig, branch: string, files: 
     body: JSON.stringify({
       message,
       tree: tree.sha,
-      parents: [head],
+      parents: [headSha],
     }),
   });
 
   await updateBranch(config, branch, commit.sha);
 }
 
-async function commitStateToDraft(state: AdminState, message: string) {
+async function commitFilesToBranch(config: GitHubConfig, branch: string, files: FileUpdate[], message: string) {
+  if (files.length === 0) return;
+
+  const head = branch === config.draftBranch ? await ensureDraftBranch(config) : await getBranchHead(config, branch);
+  if (!head) throw new Error(`Branch ${branch} was not found.`);
+
+  await commitFilesToBranchWithHead(config, branch, head, files, message);
+}
+
+async function commitStateToDraft(state: AdminState, message: string, knownHeadSha?: string) {
   const config = getGitHubConfig();
   if (!config) {
     throw new Error('Збереження ще не налаштовано.');
   }
 
   const files = contentFilesFromState(state);
-  await commitFilesToBranch(
-    config,
-    config.draftBranch,
-    Object.entries(files).map(([path, value]) => ({ path, content: `${JSON.stringify(value, null, 2)}\n` })),
-    message
-  );
+  const fileUpdates = Object.entries(files).map(([path, value]) => ({ path, content: `${JSON.stringify(value, null, 2)}\n` }));
+
+  if (knownHeadSha) {
+    await commitFilesToBranchWithHead(config, config.draftBranch, knownHeadSha, fileUpdates, message);
+  } else {
+    await commitFilesToBranch(config, config.draftBranch, fileUpdates, message);
+  }
 }
 
 async function createBlob(config: GitHubConfig, content: ArrayBuffer) {
@@ -292,16 +308,22 @@ export async function readPublishedAdminState() {
   return stateFromContentFiles();
 }
 
-export async function readDraftAdminState() {
+export type DraftReadResult = {
+  state: AdminState;
+  headSha: string | null;
+};
+
+export async function readDraftAdminState(): Promise<DraftReadResult> {
   const config = getGitHubConfig();
-  if (!config) return stateFromContentFiles();
+  if (!config) return { state: stateFromContentFiles(), headSha: null };
 
   const draftHead = await getBranchHead(config, config.draftBranch);
-  return readStateFromBranch(config, draftHead ? config.draftBranch : config.baseBranch);
+  const state = await readStateFromBranch(config, draftHead ? config.draftBranch : config.baseBranch);
+  return { state, headSha: draftHead };
 }
 
-export async function writeDraftAdminState(state: AdminState, message = 'Update admin content') {
-  await commitStateToDraft(state, message);
+export async function writeDraftAdminState(state: AdminState, message = 'Update admin content', knownHeadSha?: string) {
+  await commitStateToDraft(state, message, knownHeadSha);
 }
 
 export async function uploadDraftAsset(file: File) {
@@ -314,7 +336,7 @@ export async function uploadDraftAsset(file: File) {
     throw new Error('Можна завантажувати лише зображення.');
   }
 
-  if (file.size > 4 * 1024 * 1024) {
+  if (file.size > 2 * 1024 * 1024) {
     throw new Error('Фото все ще завелике. Оберіть менше зображення.');
   }
 

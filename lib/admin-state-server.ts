@@ -36,11 +36,11 @@ async function mutateDraftState(mutator: (currentState: AdminState) => { state: 
   const maxAttempts = 5;
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const currentState = await readDraftAdminState();
+    const { state: currentState, headSha } = await readDraftAdminState();
     const mutation = mutator(currentState);
 
     try {
-      await writeDraftAdminState(mutation.state, mutation.message);
+      await writeDraftAdminState(mutation.state, mutation.message, headSha ?? undefined);
       return mutation.state;
     } catch (error) {
       if (attempt < maxAttempts - 1 && isGitHubConflictError(error)) continue;
@@ -52,7 +52,11 @@ async function mutateDraftState(mutator: (currentState: AdminState) => { state: 
 }
 
 export async function readAdminState(options: { draft?: boolean } = {}) {
-  return options.draft ? readDraftAdminState() : readPublishedAdminState();
+  if (options.draft) {
+    const { state } = await readDraftAdminState();
+    return state;
+  }
+  return readPublishedAdminState();
 }
 
 export async function writeAdminState(state: Partial<AdminState>) {
