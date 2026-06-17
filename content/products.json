@@ -1718,6 +1718,22 @@
     ]
   },
   {
+    "slug": "акумуляторна-батарея-sunergy-pro-17-квт-48-51-2v",
+    "title": "Акумуляторна батарея Sunergy Pro 17 кВт 48-51.2V",
+    "category": "Низьковольтні акумулятори",
+    "brand": "SUNERGY",
+    "availability": "available",
+    "price": 103500,
+    "oldPrice": 105000,
+    "rating": 5,
+    "reviews": 129,
+    "image": "https://res.cloudinary.com/duzkk9qks/image/upload/v1781710952/sunergy-admin/hehwgskezb4af3wopor4.webp",
+    "shortDescription": "Акумулятор власного виробництва з своїм свервісним центром в Києві",
+    "description": "Модель: Sunergy 17 кВт 314(340)Ah - 2050$\nТип акумулятора: LiFePo4 (літій залізо фосфат) 6000 циклів\nРобочий діапазон напруги: 44.8 - 57.6V\nНомінальна енергія: 17 кВт\nПіковий струм заряду: 200A\nМаксимальний струм розряду: 200А\nПіковий струм розряду: 350A\nМасштабування: до 5 шт\nМонтаж: На підлогу\nГабарити (Ш×В×Г): 480х800х250мм\nВага: 120кг\nКолір: білий або чорний\nГарантія: 3 роки",
+    "specs": [],
+    "badges": []
+  },
+  {
     "slug": "gasoline-inverter-generator-maxpeedingrods-mxr2300-1-8-kw",
     "title": "Генератор бензиновий інверторний MXR2300 MaXpeedingRods (1,8 kW)",
     "category": "Генератори",
