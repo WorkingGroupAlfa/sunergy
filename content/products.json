@@ -45,7 +45,7 @@
   {
     "slug": "deye-bos-b-pack14-3-deye-high-voltage-lifepo4-51-2v-280ah-14-3kwh",
     "title": "BOS-B-Pack14.3 Deye (High-Voltage LiFePO4 51,2V 280Ah 14,3kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "available",
     "price": 10000,
@@ -71,7 +71,7 @@
   {
     "slug": "deye-bos-b-pack16-а3-deye-high-voltage-lifepo4-51-2v-314ah-16-08kwh",
     "title": "BOS-B-Pack16-А3 Deye (High-Voltage LiFePO4 51,2V 314Ah 16.08kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "available",
     "price": 10000,
@@ -271,7 +271,7 @@
   {
     "slug": "lithium-valley-lithium-valley-hv-control-box-bms",
     "title": "Lithium Valley HV Control Box(BMS)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Lithium Valley",
     "availability": "available",
     "price": 10000,
@@ -294,7 +294,7 @@
   {
     "slug": "lithium-valley-lv-bst-h5-12aa",
     "title": "Lithium Valley LV-BST-H5.12Aa",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Lithium Valley",
     "availability": "available",
     "price": 10000,
@@ -814,7 +814,7 @@
   {
     "slug": "suen-suen-bms-hv",
     "title": "SUEN BMS HV",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "SUEN",
     "availability": "available",
     "price": 10000,
@@ -837,7 +837,7 @@
   {
     "slug": "suen-hv-g2-g12-pro-series",
     "title": "SUEN HV-G2~G12 Pro Series",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "SUEN",
     "availability": "available",
     "price": 10000,
@@ -860,7 +860,7 @@
   {
     "slug": "suen-suen-51-100",
     "title": "SUEN-51-100",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "SUEN",
     "availability": "available",
     "price": 10000,
@@ -883,7 +883,7 @@
   {
     "slug": "suen-suen-p5150esa1",
     "title": "SUEN-P5150ESA1",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "SUEN",
     "availability": "available",
     "price": 10000,
@@ -1305,7 +1305,7 @@
   {
     "slug": "rechargeable-battery-binager-lifepo4-12-8v-100ah-1280wh-hs-12-8v100ah",
     "title": "Акумуляторна батарея HS-12,8V100Ah Binager (LiFePO4 12,8V 100Ah 1280Wh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Binager",
     "availability": "available",
     "price": 17075,
@@ -1340,7 +1340,7 @@
   {
     "slug": "rechargeable-battery-binager-lifepo4-12-8v-50ah-640wh-hs-12-8v50ah",
     "title": "Акумуляторна батарея HS-12,8V50Ah Binager (LiFePO4 12,8V 50Ah 640Wh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Binager",
     "availability": "available",
     "price": 6564,
@@ -1375,7 +1375,7 @@
   {
     "slug": "rechargeable-battery-delong-lfp-51100-05-lifepo4-51-2v-100ah-5kwh",
     "title": "Акумуляторна батарея LFP-51100-05 Delong (LiFePO4 51,2V 100Ah 5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Delong",
     "availability": "available",
     "price": 65416,
@@ -1409,7 +1409,7 @@
   {
     "slug": "rechargeable-battery-delong-lfp-51200-a-lifepo4-51-2v-200ah-10kwh",
     "title": "Акумуляторна батарея LFP-51200-A Delong (LiFePO4 51,2V 200Ah 10kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Delong",
     "availability": "available",
     "price": 123648,
@@ -1443,7 +1443,7 @@
   {
     "slug": "rechargeable-battery-delong-lfp-51200-b-lifepo4-51-2v-200ah-10kwh",
     "title": "Акумуляторна батарея LFP-51200-B Delong (LiFePO4 51,2V 200Ah 10kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Delong",
     "availability": "available",
     "price": 121031,
@@ -1477,7 +1477,7 @@
   {
     "slug": "rechargeable-battery-delong-lfp-hs51200-10-lifepo4-51-2v-200ah-10kwh",
     "title": "Акумуляторна батарея LFP-HS51200-10 Delong (LiFePO4 51,2V 200Ah 10kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Delong",
     "availability": "available",
     "price": 119523,
@@ -1511,7 +1511,7 @@
   {
     "slug": "rechargeable-battery-must-lp16-48100-lifepo4-51-2v-100ah-5-12kwh",
     "title": "Акумуляторна батарея LP16-48100 Must (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Must",
     "availability": "available",
     "price": 77169,
@@ -1545,7 +1545,7 @@
   {
     "slug": "rechargeable-battery-must-lp18-48100-lifepo4-51-2v-100ah-5-12kwh",
     "title": "Акумуляторна батарея LP18-48100 Must (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Must",
     "availability": "available",
     "price": 69763,
@@ -1579,7 +1579,7 @@
   {
     "slug": "akumulyatorna-batareya-lp19-48100-must-lifepo4-51-2v-100ah-5-12kwh",
     "title": "Акумуляторна батарея LP19-48100 Must (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Must",
     "availability": "available",
     "price": 72867,
@@ -1614,7 +1614,7 @@
   {
     "slug": "akumulyatorna-batareya-se-f12-max-deye-lifepo4-512v-230ah-118-kwh-ip65",
     "title": "Акумуляторна батарея SE-F12 Max Deye (LiFePO4 51,2V 230Ah 11,8 kWh, IP65)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "available",
     "price": 0,
@@ -1649,7 +1649,7 @@
   {
     "slug": "akumulyatorna-batareya-se-f5-pro-c-deye-lifepo4-512v-100ah-512-kwh",
     "title": "Акумуляторна батарея SE-F5 Pro-C Deye (LiFePO4 51,2V 100Ah 5,12 kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "available",
     "price": 45459,
@@ -4127,7 +4127,7 @@
   {
     "slug": "deye-bos-a-pack7-68-deye-high-voltage-lifepo4-38-4v-200ah-7-68kwh",
     "title": "BOS-A-Pack7.68 Deye (High-Voltage LiFePO4 38,4V 200Ah 7,68kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4177,7 +4177,7 @@
   {
     "slug": "deye-bos-gpack5-1-deye-high-voltage-lifepo4-51-2v-100ah-5-12kwh",
     "title": "BOS-GPack5.1 Deye (High-Voltage LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4203,7 +4203,7 @@
   {
     "slug": "deye-rw-f16-lifepo4-lv-51-2v-314ah-16kwh",
     "title": "Deye RW-F16 LiFePO4 LV 51.2V 314Ah 16kWh",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4229,7 +4229,7 @@
   {
     "slug": "deye-se-g5-1-pro-b-lifepo4-51-2v-100ah",
     "title": "Deye SE-G5.1 Pro-B LiFePO4 51,2V 100Ah",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4396,7 +4396,7 @@
   {
     "slug": "felicity-flh48100ucg1",
     "title": "Felicity FLH48100UCG1",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "preorder",
     "price": 10000,
@@ -4445,7 +4445,7 @@
   {
     "slug": "felicity-lpbf48300-felicity-lifepo4-51-2v-300ah-15kwh",
     "title": "LPBF48300 Felicity (LiFePO4 51,2V 300Ah 15kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "preorder",
     "price": 10000,
@@ -4526,7 +4526,7 @@
   {
     "slug": "deye-se-f12-l-deye-lifepo4-51-2v-230ah-11-8-kwh",
     "title": "SE-F12-L Deye (LiFePO4 51,2V 230Ah 11.8 kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4550,7 +4550,7 @@
   {
     "slug": "deye-se-f12-с-deye-lifepo4-51-2v-230ah-11-8-kwh",
     "title": "SE-F12-С Deye (LiFePO4 51,2V 230Ah 11.8 kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4574,7 +4574,7 @@
   {
     "slug": "deye-se-f16-plus-l-deye-lifepo4-51-2v-314ah-16-0-kwh",
     "title": "SE-F16 Plus-L Deye (LiFePO4 51,2V 314Ah 16.0 kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4598,7 +4598,7 @@
   {
     "slug": "deye-se-f16-с-deye-lifepo4-51-2v-314ah-16-0-kwh",
     "title": "SE-F16-С Deye (LiFePO4 51,2V 314Ah 16.0 kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -4622,7 +4622,7 @@
   {
     "slug": "deye-se-f5-pro-deye-lifepo4-51-2v-100ah-5-12kwh",
     "title": "SE-F5 Pro Deye (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 10000,
@@ -5035,7 +5035,7 @@
   {
     "slug": "akumulyatorna-batareya-bos-gm5-1-deye-high-voltage-lifepo4-51-2v-100ah-5-12kwh",
     "title": "Акумуляторна батарея BOS-GM5.1 Deye (High-Voltage LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 50825,
@@ -5094,7 +5094,7 @@
   {
     "slug": "akumulyatorna-batareya-se-g5-1-pro-b-deye-lifepo4-51-2v-100ah-5-12kwh",
     "title": "Акумуляторна батарея SE-G5.1 Pro-B Deye (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "preorder",
     "price": 47366,
@@ -5952,7 +5952,7 @@
   {
     "slug": "dahai-dahai-sdc10-box5",
     "title": "DAHAI SDC10-BOX5",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Dahai",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6159,7 +6159,7 @@
   {
     "slug": "felicity-lux-e-48100lg03-felicity-lifepo4-51-2v-100ah-5kwh",
     "title": "LUX-E-48100LG03 Felicity (LiFePO4 51,2V 100Ah 5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6183,7 +6183,7 @@
   {
     "slug": "felicity-lux-e-48200lg03-felicity-lifepo4-51-2v-205ah-10-5kwh",
     "title": "LUX-E-48200LG03 Felicity (LiFePO4 51,2V 205Ah 10,5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6207,7 +6207,7 @@
   {
     "slug": "felicity-lux-e-48250lg03-felicity-lifepo4-51-2v-250ah-12-5kwh",
     "title": "LUX-E-48250LG03 Felicity (LiFePO4 51,2V 250Ah 12,5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6231,7 +6231,7 @@
   {
     "slug": "felicity-lux-x-48100lcg01-felicity-lifepo4-51-2v-100ah-5kwh",
     "title": "LUX-X-48100LCG01 Felicity (LiFePO4 51,2V 100Ah 5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6255,7 +6255,7 @@
   {
     "slug": "felicity-lux-x-48100lmg01-felicity-lifepo4-51-2v-100ah-5kwh",
     "title": "LUX-X-48100LMG01 Felicity (LiFePO4 51,2V 100Ah 5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6279,7 +6279,7 @@
   {
     "slug": "deye-rw-m6-1-deye-lifepo4-51-2v-100ah-6-14kwh",
     "title": "RW-M6.1 Deye (LiFePO4 51,2V 100Ah 6,14kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "out_of_stock",
     "price": 10000,
@@ -6667,7 +6667,7 @@
   {
     "slug": "akumulyatorna-batareya-lpbf24200-m-felicity-lifepo4-256v-200ah-5kwh",
     "title": "Акумуляторна батарея LPBF24200-M Felicity (LiFePO4 25,6V 200Ah 5kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 34150,
@@ -6702,7 +6702,7 @@
   {
     "slug": "akumulyatorna-batareya-lux-x-48100lg01-felicity-lifepo4-51v-512kw-100ah",
     "title": "Акумуляторна батарея LUX-X-48100LG01 Felicity( LiFePO4 51V 5,12kw + 35,84 kw ,100Аh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 312002,
@@ -6737,7 +6737,7 @@
   {
     "slug": "akumulyatorna-batareya-rw-f10-6-lifepo4-512v-208ah-1064kwh",
     "title": "Акумуляторна батарея RW-F10.6 Deye (LiFePO4 51,2V 208Ah 10,64kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "out_of_stock",
     "price": 86837,
@@ -6772,7 +6772,7 @@
   {
     "slug": "akumulyatorna-batareya-rw-m6-1-deye-lifepo4-51-2v-120ah-6-14kwh",
     "title": "Акумуляторна батарея RW-M6.1 Deye (LiFePO4 51,2V 120Ah 6,14kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "out_of_stock",
     "price": 72468,
@@ -6807,7 +6807,7 @@
   {
     "slug": "akumulyatorna-batareya-se-f16-l-deye-lifepo4-512v-314ah-16-0-kwh",
     "title": "Акумуляторна батарея SE-F16-L Deye (LiFePO4 51,2V 314Ah 16.0 kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "out_of_stock",
     "price": 0,
@@ -6842,7 +6842,7 @@
   {
     "slug": "akumulyatorna-batareya-se-f5-pro-l-deye-lifepo4-512v-100ah-512kwh-2",
     "title": "Акумуляторна батарея SE-F5 Pro-L Deye (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "out_of_stock",
     "price": 0,
@@ -6877,7 +6877,7 @@
   {
     "slug": "accumulator-battery-deye-se-g5-1-pro-lifepo4-51-2v-100ah",
     "title": "Акумуляторна батарея SE-G5.1 Pro Deye (LiFePO4 51,2V 100Ah 5,12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Deye",
     "availability": "out_of_stock",
     "price": 55925,
@@ -6969,7 +6969,7 @@
   {
     "slug": "felicity-високовольтна-lux-y-48100hmg01-felicity-lifepo4-51-2v-100ah-5-12kwh",
     "title": "Високовольтна LUX-Y-48100HMG01 Felicity (LiFePO4 51,2V 100Ah 5.12kWh)",
-    "category": "Акумулятори",
+    "category": "Акумулятори низьковольтні",
     "brand": "Felicity",
     "availability": "out_of_stock",
     "price": 10000,
