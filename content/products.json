@@ -47,28 +47,6 @@
     ]
   },
   {
-    "slug": "dah-solar-dhn-54x16-fs-bb-435w-dah-solar",
-    "title": "DHN-54X16/FS(BB)-(435W) DAH Solar",
-    "category": "Сонячні панелі",
-    "brand": "DAH Solar",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/swi-solar-swi54d35-tp.png",
-    "shortDescription": "DAH Solar DHN-54X16/FS(BB)-(435W): сонячна панель для домашніх і комерційних СЕС.",
-    "description": "Сонячна панель DHN-54X16/FS(BB)-(435W) бренду DAH Solar з прайсу 27.04. DHN-54X16/FS(BB)-(435W) DAH Solar Підходить для дахових і наземних станцій у приватних та комерційних сценаріях. Ключові характеристики: 435 Вт, 435W. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "435 Вт",
-      "435W"
-    ],
-    "badges": [
-      "Є в наявності",
-      "DAH Solar",
-      "Сонячна панель"
-    ]
-  },
-  {
     "slug": "deye-epwrcable5-0-deye",
     "title": "EPWRCable5.0 Deye",
     "category": "Комплектуючі",
@@ -159,27 +137,6 @@
       "Є в наявності",
       "Solis",
       "Мережевий"
-    ]
-  },
-  {
-    "slug": "solis-s5-wifi-st",
-    "title": "Solis S5-WiFi-ST",
-    "category": "Комплектуючі",
-    "brand": "Solis",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/solis-s5-wifi-st.png",
-    "shortDescription": "Solis S5-WiFi-ST: комплектуючий елемент для сонячної енергосистеми.",
-    "description": "Комплектуюча позиція S5-WiFi-ST бренду Solis з оновленого прайсу 01.05.2026. Solis S5-WiFi-ST 4 Pin / USB Datalogger Stick, SolisCloud ready Ключові характеристики: WiFi. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "WiFi"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Solis",
-      "Комплектуючі"
     ]
   },
   {
