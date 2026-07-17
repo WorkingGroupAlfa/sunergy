@@ -1,26 +1,5 @@
 [
   {
-    "slug": "deye-bos-a-rack14-deye-14-шт",
-    "title": "BOS-A-Rack14 Deye (14 шт.)",
-    "category": "Комплектуючі",
-    "brand": "Deye",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/bos-a-rack14-deye.png",
-    "shortDescription": "Deye BOS-A-Rack14 (14 шт.): комплектуючий елемент для сонячної енергосистеми.",
-    "description": "Комплектуюча позиція BOS-A-Rack14 (14 шт.) бренду Deye з прайсу 27.04. BOS-A-Rack14 Deye (14 шт.) Ключові характеристики: Сумісність із системами СЕС. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "Сумісність із системами СЕС"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Deye",
-      "Комплектуючі"
-    ]
-  },
-  {
     "slug": "deye-bos-b-pack16-а3-deye-high-voltage-lifepo4-51-2v-314ah-16-08kwh",
     "title": "BOS-B-Pack16-А3 Deye (High-Voltage LiFePO4 51,2V 314Ah 16.08kWh)",
     "category": "Акумулятори низьковольтні",
