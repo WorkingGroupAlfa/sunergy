@@ -16,7 +16,11 @@
   "productsBadge": "Товари вітрини",
   "productsTitle": "Популярні позиції",
   "productsLink": "Увесь каталог",
-  "featuredProductSlugs": [],
+  "featuredProductSlugs": [
+    "akumulyatorna-batareya-se-f5-pro-c-deye-lifepo4-512v-100ah-512-kwh",
+    "deye-sun-12k-sg02lp1-eu-am3-deye-wifi-12-kw-1-фаза-3-mppt-lv",
+    "deye-sun-12k-sg05lp3-eu-sm2-deye-wifi-12-kw-3-фази-2-mppt-lv"
+  ],
   "storageProductSlugs": [
     "акумуляторна-батарея-sunergy-pro-17-квт-48-51-2v",
     "акумуляторна-батарея-sunergy-17-квт-48-51-2v"
