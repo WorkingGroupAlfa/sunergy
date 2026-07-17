@@ -1,31 +1,5 @@
 [
   {
-    "slug": "deye-bos-b-pack16-а3-deye-high-voltage-lifepo4-51-2v-314ah-16-08kwh",
-    "title": "BOS-B-Pack16-А3 Deye (High-Voltage LiFePO4 51,2V 314Ah 16.08kWh)",
-    "category": "Акумулятори низьковольтні",
-    "brand": "Deye",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/bos-b-pack16-a3.png",
-    "shortDescription": "Deye BOS-B-Pack16-А3 (High-Voltage LiFePO4 51,2V 314Ah 16.08kWh): акумуляторне рішення для накопичення енергії.",
-    "description": "Акумуляторне рішення BOS-B-Pack16-А3 (High-Voltage LiFePO4 51,2V 314Ah 16.08kWh) бренду Deye з прайсу 27.04. BOS-B-Pack16-А3 Deye (High-Voltage LiFePO4 51,2V 314Ah 16.08kWh) Підходить для резервного живлення, автономності та масштабування енергосистеми. Ключові характеристики: 16.08kWh, LiFePO4, 51,2V, 314Ah, HV. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "16.08kWh",
-      "LiFePO4",
-      "51,2V",
-      "314Ah",
-      "HV"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Deye",
-      "HV",
-      "LiFePO4"
-    ]
-  },
-  {
     "slug": "deye-стандартна-стійка-19-дюймів-8-шт-3u-lrack-deye",
     "title": "Deye BOS-G 3U-LRACK -  спеціалізована стійка для установки акумуляторів та плати-контролера BMS від їх виробника",
     "category": "Комплектуючі",
@@ -39,87 +13,6 @@
     "description": "Deye BOS-G 3U-LRACK -  спеціалізована стійка для установки акумуляторів та плати-контролера BMS від їх виробника. Ідеально підійде для встановлення до 8-и окремих акумуляторних батарей Deye BOS-G5.1 та однієї плати-контролера BMS HVB750/100A. \n\nГабарити та вага стійки - 580х590х1615мм, 65кг.",
     "specs": [],
     "badges": []
-  },
-  {
-    "slug": "solis-s6-eh3p10k02-nv-yd-l",
-    "title": "Solis S6-EH3P10K02-NV-YD-L",
-    "category": "Інвертори",
-    "brand": "Solis",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/solis-s6-eh3p10k02-nv-yd-l.png",
-    "shortDescription": "Solis S6-EH3P10K02-NV-YD-L: інвертор для сонячних та резервних енергосистем.",
-    "description": "Модель S6-EH3P10K02-NV-YD-L бренду Solis з оновленого прайсу 01.05.2026, розділ «Низковольтні Гібридні Solis». 10kWt 3Ph hybrid inverter with DC, Wifi, CT Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 10kWt, 3 фази, WiFi, CT, DC, Гарантія 5+5 років. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "10kWt",
-      "3 фази",
-      "WiFi",
-      "CT",
-      "DC",
-      "Гарантія 5+5 років"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Solis",
-      "Гібридний",
-      "LV"
-    ]
-  },
-  {
-    "slug": "solis-s6-eh3p12k02-nv-yd-l",
-    "title": "Solis S6-EH3P12K02-NV-YD-L",
-    "category": "Інвертори",
-    "brand": "Solis",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/solis-s6-eh3p12k02-nv-yd-l.png",
-    "shortDescription": "Solis S6-EH3P12K02-NV-YD-L: інвертор для сонячних та резервних енергосистем.",
-    "description": "Модель S6-EH3P12K02-NV-YD-L бренду Solis з оновленого прайсу 01.05.2026, розділ «Низковольтні Гібридні Solis». 12kWt 3Ph hybrid inverter with DC, Wifi, CT Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 12kWt, 3 фази, WiFi, CT, DC, Гарантія 5+5 років. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "12kWt",
-      "3 фази",
-      "WiFi",
-      "CT",
-      "DC",
-      "Гарантія 5+5 років"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Solis",
-      "Гібридний",
-      "LV"
-    ]
-  },
-  {
-    "slug": "solis-s6-eh3p15k-h",
-    "title": "Solis S6-EH3P15K-H",
-    "category": "Інвертори",
-    "brand": "Solis",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/solis-s6-eh3p15k-h.png",
-    "shortDescription": "Solis S6-EH3P15K-H: інвертор для сонячних та резервних енергосистем.",
-    "description": "Модель S6-EH3P15K-H бренду Solis з оновленого прайсу 01.05.2026, розділ «Високовольтні Гібридні Solis». 15kWt 3Ph hybrid inverter with DC,Wifi,CT Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 15kWt, 3 фази, WiFi, CT, DC, Гарантія 5+5 років. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "15kWt",
-      "3 фази",
-      "WiFi",
-      "CT",
-      "DC",
-      "Гарантія 5+5 років"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Solis",
-      "Гібридний",
-      "HV"
-    ]
   },
   {
     "slug": "solis-s6-eh3p50k-h",
