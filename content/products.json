@@ -41,31 +41,6 @@
     "badges": []
   },
   {
-    "slug": "solis-s5-gc60k",
-    "title": "Solis S5-GC60K",
-    "category": "Інвертори",
-    "brand": "Solis",
-    "availability": "available",
-    "price": 10000,
-    "rating": 4.8,
-    "reviews": 0,
-    "image": "/images/solis-s5-gc60k.png",
-    "shortDescription": "Solis S5-GC60K: інвертор для сонячних та резервних енергосистем.",
-    "description": "Модель S5-GC60K бренду Solis з оновленого прайсу 01.05.2026, розділ «Мережеві Solis». 60kW 3Ph Inverter, 5 MPPT, DC, PID Підходить для сонячних, гібридних або резервних систем, де важливі стабільна робота, моніторинг і сумісність з енергетичним обладнанням. Ключові характеристики: 60kW, 3 фази, 5 MPPT, DC, Гарантія 5 років. Ціна на вітрині тимчасово встановлена як 10 000 грн.",
-    "specs": [
-      "60kW",
-      "3 фази",
-      "5 MPPT",
-      "DC",
-      "Гарантія 5 років"
-    ],
-    "badges": [
-      "Є в наявності",
-      "Solis",
-      "Мережевий"
-    ]
-  },
-  {
     "slug": "solis-s6-eh3p10k02-nv-yd-l",
     "title": "Solis S6-EH3P10K02-NV-YD-L",
     "category": "Інвертори",
