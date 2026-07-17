@@ -387,7 +387,7 @@
   {
     "slug": "akumulyatorna-batareya-se-f5-pro-c-deye-lifepo4-512v-100ah-512-kwh",
     "title": "Акумуляторна батарея SE-F5 Pro-C Deye (LiFePO4 51,2V 100Ah 5,12 kWh)",
-    "category": "Акумулятори низьковольтні",
+    "category": "Низьковольтні акумулятори",
     "brand": "Deye",
     "availability": "available",
     "price": 38250,
@@ -434,7 +434,7 @@
   {
     "slug": "акумуляторна-батарея-sunergy-17-квт-48-51-2v",
     "title": "Акумуляторна батарея Sunergy 17 кВт 48-51.2V",
-    "category": "Акумулятори низьковольтні",
+    "category": "Низьковольтні акумулятори",
     "brand": "SUNERGY",
     "availability": "available",
     "price": 85000,
@@ -464,7 +464,7 @@
   {
     "slug": "акумуляторна-батарея-sunergy-pro-17-квт-48-51-2v",
     "title": "Акумуляторна батарея Sunergy Pro 17 кВт 48-51.2V",
-    "category": "Акумулятори низьковольтні",
+    "category": "Низьковольтні акумулятори",
     "brand": "SUNERGY",
     "availability": "available",
     "price": 95000,
