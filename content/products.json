@@ -37,6 +37,27 @@
     "badges": []
   },
   {
+    "slug": "акумуляторна-батарея-deye-se-f16-max-lifepo4-16-квт-год-ip65",
+    "title": "Акумуляторна батарея DEYE SE-F16 Max, LiFePO4, 16 кВт·год, IP65",
+    "category": "Акумулятори",
+    "brand": "Deye",
+    "availability": "available",
+    "price": 105750,
+    "oldPrice": 110000,
+    "rating": 4.8,
+    "reviews": 11,
+    "image": "https://res.cloudinary.com/duzkk9qks/image/upload/v1791559041/sunergy-admin/s9u3efpzzrwlvsnxtzgi.webp",
+    "images": [
+      "https://res.cloudinary.com/duzkk9qks/image/upload/v1791559041/sunergy-admin/s9u3efpzzrwlvsnxtzgi.webp",
+      "/uploads/admin/20261009151725-6iqtto-deye-se-f16-max-front.webp",
+      "/uploads/admin/20261009151730-6xpyy8-deye-se-f16-max-side.webp"
+    ],
+    "shortDescription": "Deye SE-F16 Max — низьковольтний LiFePO4 модуль накопичення енергії на комірках 314 А·год. За офіційною брошурою Deye EU: номінальна і корисна енергія 16 кВт·год, напруга 51.2 В (робоча 44.8–57.6 В), максимальна віддача 11.8 кВт, захист IP65, вага 118 кг, розміри без підвісної планки та клем 464×914×244.5 мм.",
+    "description": "",
+    "specs": [],
+    "badges": []
+  },
+  {
     "slug": "deye-se-f16-с-deye-lifepo4-51-2v-314ah-16-0-kwh",
     "title": "Акумуляторна батарея SE-F16-С Deye (LiFePO4 51,2V 314Ah 16.0 kWh)",
     "category": "Низьковольтні акумулятори",
